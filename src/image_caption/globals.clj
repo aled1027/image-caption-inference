@@ -18,3 +18,8 @@
 ;   [:kicks :girl :soccer-ball]
 ; }
 ;
+
+; width and height of images
+(def image-dim
+  [200 100]
+)
