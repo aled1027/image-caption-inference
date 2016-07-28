@@ -4,8 +4,8 @@
 
 (def renderer (Clipart. image-width image-height)) ; Renderer object
 
-(defn draw-clip [filename x-pos y-pos]
-  (.addClip renderer filename x-pos y-pos))
+(defn draw-clip [filename x-pos y-pos flip]
+  (.addClip renderer filename x-pos y-pos flip))
 
 (defn draw-clips [clips]
   ;; clips = vector of dictionaries of :sprite :x :y :flip
@@ -15,8 +15,9 @@
   (mapv (fn [clip]
           (let [filename ((:sprite clip) clip-map)
                 x-pos (:x clip)
-                y-pos (:y clip)]
-            (draw-clip filename x-pos y-pos)))
+                y-pos (:y clip)
+                flip (:flip clip)]
+            (draw-clip filename x-pos y-pos flip)))
         clips))
 
 (defn render-to-file [clips filename]

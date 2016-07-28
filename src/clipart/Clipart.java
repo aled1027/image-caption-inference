@@ -19,6 +19,7 @@ import java.awt.geom.CubicCurve2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.FilteredImageSource;
@@ -83,8 +84,16 @@ public class Clipart {
 
     // --- ALEX L RELEVANT METHODS--- //
 
-    public void addClip(String filename, int x, int y) throws IOException {
+  public void addClip(String filename, int x, int y, int flip) throws IOException {
         BufferedImage clip_img = ImageIO.read(new File(filename));
+        if (flip == 1)
+        {
+          // Flip the image horizontally
+          AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
+          tx.translate(-clip_img.getWidth(null), 0);
+          AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+          clip_img = op.filter(clip_img, null);
+        }
         _img_g.drawImage(clip_img, x, y, null);
     }
 
