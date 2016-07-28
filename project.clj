@@ -13,7 +13,7 @@
                  [net.mikera/vectorz-clj "0.44.1"]
                  [net.polyc0l0r/clj-hdf5 "0.2.2-SNAPSHOT"]]
   :java-source-paths ["src/ox_captcha", "src/clipart"]
-  :main ^:skip-aot examples.core
-  ;;:main ^:skip-aot image-caption.core
+  ;:main ^:skip-aot examples.core
+  :main ^:skip-aot image-caption.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})

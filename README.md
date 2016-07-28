@@ -2,12 +2,6 @@
 # Making the images
 - http://stackoverflow.com/questions/10408994/how-to-add-one-image-onto-another-in-java
 
-# Running the code
-
-cd image-caption
-lein run
->>>>>>> ab914ac076a778105e7fef139890eea9b5197242:README.md
-
 # Resources
 - https://filebox.ece.vt.edu/~parikh/data.htm
 - http://www.cv-foundation.org/openaccess/content_cvpr_2013/papers/Zitnick_Bringing_Semantics_into_2013_CVPR_paper.pdf
@@ -27,6 +21,10 @@ Download from http://example.com/FIXME.
 FIXME: explanation
 
     $ java -jar image-caption-0.1.0-standalone.jar [args]
+
+Or using lein:
+
+    $ lein run
 
 ## Options
 
