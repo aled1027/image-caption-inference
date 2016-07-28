@@ -12,7 +12,7 @@
 ;   takes facts and generates image desription
 ;   1) which entities are present? boy, girl, soccer-ball
 ;   2) how to modify each entity:
-;      :kicks a b => add kicking leg to a
+;       :kicks a b => add kicking leg to a
 ;    3) how to place each object:
 ;       :kicks a b => a is close to b - set priors on positions on a and b such that they are close
 ;     assume facts are sensible?
@@ -32,19 +32,24 @@
         (recur (union nouns new-nouns) (rest facts)))
       nouns)))
 
+(defm initial-entities [nouns]
+  (let [dist-x (uniform-discrete 0 (nth image-dim 0))
+        dist-y (uniform-discrete 0 (nth image-dim 1))]
+    (map (fn [x] {:sprite x :x dist-x :y dist-y}) nouns)))
+
 ; generate an entitiy for a noun at a uniform random position
-(defm generate-entity [noun x-mean x-var y-mean y-var]
-  {:sprite noun
-   :x (sample (normal x-mean x-var))
-   :y (sample (normal y-mean y-var))}
+(defm generate-sprite [entity]
+  {:sprite (get entity :sprite)
+   :x (sample (get entity :x))
+   :y (sample (get entity :y))}
 )
 
 (with-primitive-procedures [nouns-from-facts]
   (defquery generate-image [facts]
     (let [
-      ; get all entities (the nouns mentioned in the facts)
-      entities (nouns-from-facts facts)
-      ; generate image description
-      image-description (map #(generate-entity % 100 5 100 5) entities)
+      ; the entities (the nouns mentioned in the facts)
+      entities (initial-entities (nouns-from-facts facts))
+      ; generate image description for the entities
+      sprites (map generate-sprite entities)
       ; TODO: add more advanced cases, as listed above
-  ] image-description)))
+  ] sprites)))

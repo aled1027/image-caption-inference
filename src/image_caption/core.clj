@@ -1,12 +1,9 @@
 (ns image-caption.core
+  (:use [image_caption globals images])
   (:use [anglican.core :exclude [-main]])
-  (:use [image_caption globals])
   (:use [anglican runtime emit])
   (:gen-class)
-  (:import [robots.Clipart Clipart])
-  (:require [clojure.string :as str]
-            [clojure.core.matrix :as m]
-            [clojure.java.io :as io]))
+  (:import [robots.Clipart Clipart]))
 
 (def clipart (Clipart. image-width image-height)) ; Renderer object
 
@@ -69,11 +66,21 @@
         img2 (render (nth all-clips 1))]
     (println (image-similarity img1 img2))))
 
-(defn alex-ledger-func []
-  (println "running alex-ledger-func")
-  (println (dist-test)))
+;(defn alex-ledger-func []
+;  (println "running alex-ledger-func")
+;  (println (dist-test)))
+;(defn alex-ledger-func []
+;  (println "running alex-ledger-func")
+;  (println (render-many all-clips)))
+;
+;(defn -main
+;  "I don't do a whole lot ... yet."
+;  [& args]
+;  (alex-ledger-func))
 
 (defn -main
-  "I don't do a whole lot ... yet."
   [& args]
-  (alex-ledger-func))
+  (let [example-facts #{[:close :boy :girl] [:kicks :girl :boy]}
+        samples (take 10 (doquery :importance generate-image [example-facts]))]
+    (println (first samples))
+    (render-to-file (get (first samples) :result) "example-facts")))
