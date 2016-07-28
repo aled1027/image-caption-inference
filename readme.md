@@ -1,4 +1,8 @@
 
+
+# Making the images
+- http://stackoverflow.com/questions/10408994/how-to-add-one-image-onto-another-in-java
+
 # Resources
 - https://filebox.ece.vt.edu/~parikh/data.htm
 - http://www.cv-foundation.org/openaccess/content_cvpr_2013/papers/Zitnick_Bringing_Semantics_into_2013_CVPR_paper.pdf

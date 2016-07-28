@@ -12,7 +12,7 @@
                  [net.mikera/core.matrix "0.52.2"]
                  [net.mikera/vectorz-clj "0.44.1"]
                  [net.polyc0l0r/clj-hdf5 "0.2.2-SNAPSHOT"]]
-  :java-source-paths ["src/ox_captcha"]
+  :java-source-paths ["src/ox_captcha", "src/clipart"]
   :main ^:skip-aot examples.core
   :target-path "target/%s"
   :jvm-opts ["-Xmx4g" "-Xms2g"]
