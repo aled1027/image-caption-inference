@@ -59,11 +59,6 @@ public class Clipart {
             '2', '3', '4', '5', '6', '7', '8', 'A', 'J', 'K','z','q','S'};
 
     // new stuff
-    private String[] clips = new String[20];
-    //clips[0] = "boy";
-    //clips[1] = "girl";
-    // end new stuff
-
     public Clipart(int width, int height) {
         _img = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
         _img_g = _img.createGraphics();
@@ -83,6 +78,21 @@ public class Clipart {
         _height = height;
 
     }
+
+
+
+    // --- ALEX L RELEVANT METHODS--- //
+
+    public void addClip(String filename, int x, int y) throws IOException {
+        BufferedImage clip_img = ImageIO.read(new File(filename));
+        _img_g.drawImage(clip_img, x, y, null);
+    }
+
+    public void save(String fileName) throws IOException {
+        ImageIO.write(_img, "png", new File(fileName));
+    }
+       
+    // --- END ALEX L RELEVANT METHODS --- //
 
     public void setCharSet(char[] charSet) {
         _charSet = charSet;
@@ -638,9 +648,7 @@ public class Clipart {
         return ret;
     }
 
-    public void save(String fileName) throws IOException {
-        ImageIO.write(_img, "png", new File(fileName));
-    }
+    
 
     private int ranInt(int i, int j) {
         double d = Math.random();
