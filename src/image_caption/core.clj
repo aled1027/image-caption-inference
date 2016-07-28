@@ -1,5 +1,5 @@
 (ns image-caption.core
-  (:use [image_caption globals images])
+  (:use [image_caption globals images sentences])
   (:use [anglican.core :exclude [-main]])
   (:use [anglican runtime emit])
   (:gen-class)
@@ -80,7 +80,11 @@
 
 (defn -main
   [& args]
-  (let [example-facts #{[:close :boy :girl] [:kicks :girl :boy]}
-        samples (take 10 (doquery :importance generate-image [example-facts]))]
-    (println (first samples))
-    (render-to-file (get (first samples) :result) "example-facts")))
+  (let [example-facts #{[:kicks :boy :girl] [:close :bear :soccer-ball]}
+        image-samples (take 100 (doquery :importance generate-image [example-facts]))
+        sentence-samples (take 100 (doquery :importance generate-sentence [example-facts]))
+        image-sample (first image-samples)
+        sentence-sample (first sentence-samples)]
+    (println (get image-sample :result))
+    (println (get sentence-sample :result))
+    (render-to-file (image-sample :result) "example-facts")))

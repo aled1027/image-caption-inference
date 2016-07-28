@@ -19,15 +19,9 @@
 ; }
 ;
 
-; width and height of images
-(def image-dim
-  [200 100]
-)
-
 ;; Globals for rendering image
-(def image-width (first image-dim))
-(def image-height (second image-dim))
-
+(def image-width 1024) ; Width of CAPTCHA
+(def image-height 768) ; Height of CAPTCHA
 (def clip-map {:boy "resources/clipart_pngs/hb0_7s.png" 
                :girl "resources/clipart_pngs/hb1_7s.png" 
                :soccer-ball "resources/clipart_pngs/t_4s.png" 
