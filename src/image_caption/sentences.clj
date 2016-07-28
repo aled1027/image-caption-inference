@@ -27,7 +27,7 @@
   (observe* [this value]            
             (if (= (sort vector)
                    (sort value))
-              (sum (map (comp - log) (range 1 (count vector))))
+              (sum (map (comp - log) (range 1 (inc (count vector)))))
               Double/NEGATIVE_INFINITY)))
 
 (defn add-article [noun]
