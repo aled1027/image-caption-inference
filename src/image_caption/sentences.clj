@@ -12,7 +12,11 @@
    ;; verbs
    :close ["is close to"]
    :faces ["faces" "is facing"]
-   :kicks ["kicks" "is kicking"] ;; TODO: passive constructions?
+   :kicks ["kicks" "is kicking"]
+   ;; passive verbs
+   [:passive :close] ["is close to"]
+   [:passive :faces] ["is faced by" "is being faced by"]
+   [:passive :kicks] ["is kicked by" "is being kicked by"]
    ;; other
    :and ["and" "while"]})
 
@@ -55,11 +59,11 @@
 ;;     [noun]))
 
 (defn reorder-fact [fact]
-  (let [verb (fact 0)
+  (let [verb (get fact 0)
         nouns (subvec fact 1)]
-    (if (= 1 (:arity (verb verbs)))
-      (concatv (nouns 0) [verb])
-      (concatv [(nouns 0)] [verb] [(nouns 1)]))))
+    (if (= 1 (:arity (get verbs verb)))
+      (concatv (get nouns 0) [verb])
+      (concatv [(get nouns 0)] [verb] [(get nouns 1)]))))
 
 (def example-facts
   [[:kicks :girl :boy]
@@ -91,30 +95,32 @@
 (with-primitive-procedures
   [concatv pronoun reorder-fact triples relative-pronoun accusative-pronoun smart-join]
   (defm sample-sentence [facts]
-    (let [connect (fn [prev translations next can-use-comma]
+    (let [pick-word (fn [word] (sample-from-vector (get translations word)))
+          pick-noun (mem (fn [noun] (sample-from-vector (get translations noun))))
+          connect (fn [prev word next can-use-comma]
                     (if prev
-                      (map #(str (if (and next can-use-comma)
-                                   ", "
-                                   "and ")
-                                 %) translations) ;; TODO: other connectives
-                      translations))
+                      (str (if (and next can-use-comma)
+                             ", "
+                             (str (pick-word :and) " "))
+                           word) ;; TODO: other connectives
+                      word))
           handle (fn [[prev cur next]]
                    (let [translations-0
                          (concatv
-                          (connect prev (get translations (get cur 0)) next true)
+                          [(connect prev (pick-noun (get cur 0)) next true)]
                           (if (and prev (= (get cur 0) (get prev 0)))
-                            (connect prev [(pronoun (get cur 0))] next false)
+                            [(connect prev (pronoun (get cur 0)) next false)]
                             nil)
                           (if (and prev (= (get cur 0) (get prev 2)))
                             [(str ", " (relative-pronoun (get cur 0)))]
                             nil))
 
                          translations-1
-                         (get translations (get cur 1))
+                         [(pick-word (get cur 1))]
 
                          translations-2
                          (concatv
-                          (get translations (get cur 2))
+                          [(pick-noun (get cur 2))]
                           ;; (if (and prev (= (get cur 2) (get prev 2)))
                           ;;   [(accusative-pronoun (get cur 2))]
                           ;;   nil) ;; creates awkward sentences
@@ -123,13 +129,26 @@
           result (smart-join (apply concat (map handle (triples (map reorder-fact facts)))))]
       result)))
 
+(defn capitalize-sentence [string]
+  (str (upper-case (first string)) (subs string 1)))
+
 (defn sentenceify [string]
-  (str string ".")) ;; TODO: capitalize first character
+  (capitalize-sentence (str string ".")))
+
+(defn make-passive [fact]
+  [[:passive (get fact 0)] (get fact 2) (get fact 1)])
+
+(with-primitive-procedures [make-passive]
+  (defm shuffle-passive [fact]
+    (if (and (= 3 (count fact)) (sample (flip 0.3)))
+      (make-passive fact)
+      fact)))
 
 (with-primitive-procedures [shuffled sentenceify]
   (defm generate-sentence [facts]
     (let [facts' (sample (shuffled facts))
-          sentence (sample-sentence facts')
+          facts'' (map shuffle-passive facts')
+          sentence (sample-sentence facts'')
           sentence' (sentenceify sentence)
           ]
       sentence')))
@@ -139,10 +158,10 @@
 
 (defquery query-short-sentence [facts]
   (let [r (generate-sentence facts)]
-    (observe (exponential 1) (count r))
+    (observe (exponential 10) (count r))
     r))
 
 ;; (take 100 (doquery :importance query-sentence [example-facts]))
-
 ;; (first (drop 1500 (doquery :lmh query-short-sentence [example-facts])))
+
 
