@@ -4,6 +4,7 @@ resources
 tags
 *-port
 /target
+/resources
 /classes
 /checkouts
 pom.xml
