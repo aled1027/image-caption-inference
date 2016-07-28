@@ -1,12 +1,11 @@
-(ns image-caption.clipart
+(ns image_caption.clipart
   (:use [image_caption globals])
-  (:gen-class)
   (:import [robots.Clipart Clipart]))
 
-(def clipart (Clipart. image-width image-height)) ; Renderer object
+(def renderer (Clipart. image-width image-height)) ; Renderer object
 
 (defn draw-clip [filename x-pos y-pos]
-  (.addClip clipart filename x-pos y-pos))
+  (.addClip renderer filename x-pos y-pos))
 
 (defn draw-clips [clips]
   ;; clips = vector of dictionaries of :sprite :x :y :flip
@@ -22,15 +21,15 @@
 
 (defn render-to-file [clips filename]
   ;; renders and saves image to filename
-  (.background clipart)
+  (.background renderer)
   (draw-clips clips)
-  (.save clipart filename))
+  (.save renderer filename))
 
 (defn render [clips]
   ;; render image, return 2D array of image
-  (.background clipart)
+  (.background renderer)
   (draw-clips clips)
-  (mapv #(into [] %) (seq (.getImageArray2D clipart))))
+  (mapv #(into [] %) (seq (.getImageArray2D renderer))))
 
 (defn render-many [many-clips]
   ;; render many images, returns a vector of

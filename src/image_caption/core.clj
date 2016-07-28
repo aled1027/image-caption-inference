@@ -1,8 +1,8 @@
-(ns image-caption.core
-  (:use [image_caption globals images sentences])
+(ns image_caption.core
+  (:use [image_caption globals images sentences clipart])
   (:use [anglican.core :exclude [-main]])
   (:use [anglican runtime emit])
-  (:gen-class)
+  (:gen-class))
 
 (defn vector-dot [xs ys]
   ;; computes the dot product between two vectors
