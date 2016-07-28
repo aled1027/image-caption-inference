@@ -1,6 +1,9 @@
 (ns image-caption.core
-  (:use image_caption.globals)
+  (:use [image_caption globals images])
+  (:use [anglican.core :exclude [-main]])
+  (:use [anglican runtime emit])
   (:gen-class)
+
   (:import [robots.Clipart Clipart]))
 
 
@@ -34,11 +37,18 @@
 (defn render-many [many-clips]
   (mapv (fn [clips] (render clips)) many-clips))
 
-(defn alex-ledger-func []
-  (println "running alex-ledger-func")
-  (println (render-many all-clips)))
+;(defn alex-ledger-func []
+;  (println "running alex-ledger-func")
+;  (println (render-many all-clips)))
+;
+;(defn -main
+;  "I don't do a whole lot ... yet."
+;  [& args]
+;  (alex-ledger-func))
 
 (defn -main
-  "I don't do a whole lot ... yet."
   [& args]
-  (alex-ledger-func))
+  (let [example-facts #{[:close :boy :girl] [:kicks :girl :boy]}
+        samples (take 10 (doquery :importance generate-image [example-facts]))]
+    (println (first samples))
+    (render-to-file (get (first samples) :result) "example-facts")))
