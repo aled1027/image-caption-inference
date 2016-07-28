@@ -2,17 +2,6 @@
   (:gen-class)
   (:import [robots.Clipart Clipart]))
 
-;; other imports that captcha has. May need later
-;(:refer-clojure :exclude [rand rand-nth rand-int name read])
-;(:require [clojure.string :as str]
-;          [clojure.core.matrix :as m]
-;          [clojure.java.io :as io])
-;(:use clj-hdf5.core
-;      [anglican runtime emit core inference])
-;(:import (ch.systemsx.cisd.hdf5 HDF5Factory IHDF5SimpleReader
-;                                IHDF5SimpleWriter HDF5FactoryProvider
-;                                HDF5DataClass HDF5StorageLayout)
-
 (def image-width 400) ; Width of CAPTCHA
 (def image-height 400) ; Height of CAPTCHA
 (def clipart (Clipart. image-width image-height)) ; Renderer object
@@ -54,17 +43,37 @@
        clips))
 
 (defn render-to-file [clips filename]
-  (let [clips [{:sprite :boy :x 0 :y 0}
-               {:sprite :girl :x 100 :y 100}
-               {:sprite :soccer-ball :x 200 :y 200}
-               {:sprite :bear :x 50 :y 300}]]
     (.background clipart)
     (draw-clips clips)
-    (.save clipart filename)))
+    (.save clipart filename))
+
+(def all-clips [[{:sprite :boy :x 0 :y 30}
+                {:sprite :girl :x 109 :y 110}
+                {:sprite :soccer-ball :x 210 :y 200}
+                {:sprite :bear :x 51 :y 320}]
+
+                [{:sprite :boy :x 0 :y 10}
+                {:sprite :girl :x 100 :y 180}
+                {:sprite :soccer-ball :x 230 :y 200}
+                {:sprite :bear :x 200 :y 320}]
+
+                [{:sprite :boy :x 0 :y 20}
+                {:sprite :girl :x 100 :y 200}
+                {:sprite :soccer-ball :x 100 :y 200}
+                {:sprite :bear :x 50 :y 200}]])
+
+(defn render-many [n]
+    (loop [i 0
+           clips (first all-clips)]
+      (render-to-file clips (clojure.string/join ["file" (str i) ".png"]))
+      (if (< i n)
+        (recur (+ i 1) (nth all-clips i))
+        true)))
+
 
 (defn alex-ledger-func []
   (println "running alex-ledger-func")
-  (render-to-file clips "file.png"))
+  (render-many 3))
 
 (defn -main
   "I don't do a whole lot ... yet."
