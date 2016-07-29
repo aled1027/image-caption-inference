@@ -10,16 +10,18 @@
         samples (take 10 (drop 100
                     (doquery :lmh generate-image [image] :numer-of-particles 1000)))]
     (save-many-images (map #(:image (:result %)) samples) "output/image")
-    (println (map
-               #(image-distance
-                  image
-                 :image (:result %)))
-              samples)))
+    (println "same image      " (image-distance image image))
+    (println "different image " (image-distance (read-image "different.png") image))
+    (println "generated image " (image-distance (:image (:result (first samples))) image))
+    ;(println (map
+    ;          #(:facts (:result %))
+    ;          samples))
+))
 
 ;(defn -main
 ;  [& args]
-;  (let [example-facts #{[:kicks :bear :soccer-ball] [:kicks :boy :soccer-ball]}
-;        samples (take 10 (doquery generate-image-from-facts-query [example-facts]))]
+;  (let [example-facts #{[:close :bear :soccer-ball]}
+;        samples (take 10 (doquery :importance generate-image-from-facts-query [example-facts]))]
 ;    (save-many-images (map #(:result %) samples) "output/image")))
 
 ;(defn -main

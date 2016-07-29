@@ -52,7 +52,7 @@
                               (+ border-top (/ image-height 2))
                               (- image-height border-bottom)))
                   flip (sample (uniform-discrete 0 1))
-                  scale (sample (uniform-continuous 0.7 1))]
+                  scale 1]
               [noun {:sprite noun :x x :y y :flip flip :scale scale}]))
           nouns)))
 
@@ -95,20 +95,20 @@
         (if (< left-x right-x)
           (update-entity entities left :flip 0)
           (update-entity entities left :flip 1)))
-      (= relation :kicks)
-      ; left sticks leg out, and left close to right, and left faces right
-      (apply-facts
-        (cond
-          (= left :boy)
-          (update-entity entities left :sprite :boy-kicking)
-          (= left :girl)
-          (update-entity entities left :sprite :girl-kicking)
-          (= left :soccer-ball)
-          (update-entity entities left :sprite :soccer-ball-kicking)
-          :else
-          (update-entity entities left :sprite :bear-kicking))
-        ; FIXME: ordering here matters! Also between results
-        #{[:close left right] [:faces left right]})
+      ;(= relation :kicks)
+      ;; left sticks leg out, and left close to right, and left faces right
+      ;(apply-facts
+      ;  (cond
+      ;    (= left :boy)
+      ;    (update-entity entities left :sprite :boy-kicking)
+      ;    (= left :girl)
+      ;    (update-entity entities left :sprite :girl-kicking)
+      ;    (= left :soccer-ball)
+      ;    (update-entity entities left :sprite :soccer-ball-kicking)
+      ;    :else
+      ;    (update-entity entities left :sprite :bear-kicking))
+      ;  ; FIXME: ordering here matters! Also between results
+      ;  #{[:close left right] [:faces left right]})
       :else
       entities)))
 
@@ -136,7 +136,7 @@
   [img1pixels (get-greyscale-pixels img1)]
   (sample* [this] (assert false "can't sample from this - dummy!"))
   (observe* [this img2]
-            (* 100 (image-distance img1 img2))))
+            (image-distance img1 img2)))
 
 ; generate an image from some facts
 (with-primitive-procedures [nouns-from-facts render]
