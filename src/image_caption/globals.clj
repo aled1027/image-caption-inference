@@ -23,20 +23,20 @@
 (def image-reduction-constant 50)
 (def image-width 1024) ; Width of CAPTCHA
 (def image-height 768) ; Height of CAPTCHA
-(def clip-map {:boy "resources/clipart_pngs/hb0_7s.png" 
-               :girl "resources/clipart_pngs/hb1_7s.png" 
-               :soccer-ball "resources/clipart_pngs/t_4s.png" 
+(def clip-map {:boy "resources/clipart_pngs/hb0_7s.png"
+               :boy-kicking "resources/clipart_pngs/hb0_13s.png"
+               :girl "resources/clipart_pngs/hb1_7s.png"
+               :girl-kicking "resources/clipart_pngs/hb1_10s.png"
+               :soccer-ball "resources/clipart_pngs/t_4s.png"
                :bear "resources/clipart_pngs/a_0s.png"})
 
 ;; for testing
-(def all-clips [[{:sprite :boy :x 0 :y 30}
-                {:sprite :girl :x 109 :y 110}
-                {:sprite :soccer-ball :x 210 :y 200}
-                {:sprite :bear :x 51 :y 320}]
+(def all-clips [[{:sprite :boy :x 0 :y 30 :flip 0}
+                {:sprite :girl :x 109 :y 110 :flip 0}
+                {:sprite :soccer-ball :x 210 :y 200 :flip 0}
+                {:sprite :bear :x 51 :y 320 :flip 0}]
 
-                [{:sprite :boy :x 100 :y 100}
-                {:sprite :girl :x 0 :y 0}
-                {:sprite :soccer-ball :x 100 :y 200}
-                {:sprite :bear :x 50 :y 50}]])
-
-
+                [{:sprite :boy :x 100 :y 100 :flip 0}
+                {:sprite :girl :x 0 :y 0 :flip 1}
+                {:sprite :soccer-ball :x 100 :y 200 :flip 0}
+                {:sprite :bear :x 50 :y 50 :flip 1}]])

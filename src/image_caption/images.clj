@@ -5,11 +5,11 @@
 
 ; Generative model from scene description to image description
 
-(def border-width 40)
+(def border-width 100)
 (def close-distance 40)
 
 ; image descriptions are of the form
-; [ ... { :sprite :boy :x 78 :y 144 } ... ]
+; [ ... { :sprite :boy :x 78 :y 144 :flip } ... ]
 
 ; generative model:
 ;   takes facts and generates image desription
@@ -41,10 +41,18 @@
     (map
       (fn [noun]
         (let [x (sample (uniform-discrete border-width (- image-width border-width)))
-              y (sample (uniform-discrete border-width (- image-width border-width)))]
-          [noun {:sprite noun :x x :y y}]))
+              y (sample (uniform-discrete border-width (- image-height border-width)))
+              flip (sample (uniform-discrete 0 1))]
+          [noun {:sprite noun :x x :y y :flip flip}]))
       nouns)))
 
+(defm update-entity [entities entity key value]
+  (let [x (get entities entity)
+        new-x (assoc x key value)]
+   (assoc entities entity new-x)))
+
+
+(declare apply-facts)
 
 (defm apply-fact [entities fact]
   (let [relation (nth fact 0)
@@ -54,11 +62,26 @@
         right-entity (get entities right)]
     (cond
       (= relation :close)
+        ; right is close to left
         (let [left-x (:x left-entity)
               left-y (:y left-entity)
               x (sample (uniform-continuous (- left-x close-distance) (+ left-x close-distance)))
               y (sample (uniform-continuous (- left-y close-distance) (+ left-y close-distance)))]
-            (conj entities [right {:sprite (:sprite right-entity) :x x :y y}]))
+            (update-entity (update-entity entities right :y y) right :x x))
+      (= relation :faces)
+        ; left faces right
+        (let [left-x (:x left-entity)
+              right-x (:x right-entity)]
+          (if (< left-x right-x)
+            (update-entity entities left :flip 0)
+            (update-entity entities left :flip 1)))
+      (= relation :kicks)
+        ; left sticks leg out, and left close to right, and left faces right
+        (apply-facts
+          (if (= left :boy)
+            (update-entity entities left :sprite :boy-kicking)
+            (update-entity entities left :sprite :girl-kicking))
+          #{[:close left right] [:faces left right]})
       :else
         entities)))
 
@@ -72,7 +95,8 @@
   (let [entity (nth value 1)]
     {:sprite (get entity :sprite)
      :x (get entity :x)
-     :y (get entity :y)}))
+     :y (get entity :y)
+     :flip (get entity :flip)}))
 
 (defm generate-sprites [entities]
   (map generate-sprite (seq entities)))
