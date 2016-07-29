@@ -137,7 +137,8 @@
   (sample* [this] (assert false "can't sample from this - dummy!"))
   (observe* [this img2]
             ; Alex L changning ths
-            (image-distance img1pixels (get-greyscale-pixels img2))))
+            (image-distance img1 img2)))
+            ;(image-distance img1pixels (get-greyscale-pixels img2))))
 
 ; generate an image from some facts
 (with-primitive-procedures [nouns-from-facts render]

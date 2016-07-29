@@ -23,7 +23,7 @@
         times (m/mmul proj1 (m/mmul mat proj2))]
     (m/normalise (m/to-vector times))))
 
-(defn image-distance [img1 img2]
+(defn image-distance-random-projection [img1 img2]
   (let [r_img1 (m/to-vector (reduce-dim img1))
         r_img2 (m/to-vector (reduce-dim img2))
         dist (m/distance r_img1 r_img2)]
@@ -33,12 +33,19 @@
   (let [hist (.histogram image 2)]
     (seq hist)))
 
+(defn image-distance-scaled-histogram [img1 img2]
+  (let [h_img1 (m/to-vector (histogram img1))
+        h_img2 (m/to-vector (histogram img2))
+        dist (m/distance h_img1 h_img2)
+        scaled_dist (/ dist (* image-width image-height))]
+    scaled_dist))
+
+(defn image-distance [img1 img2]
+  (image-distance-scaled-histogram img1 img2))
+
 (defn test-image-distance []
   (let [img1 (read-image "resources/examples/example1.png")]
         (println (histogram img1))))
-
-
-
 
     ;    img2 (read-image "resources/examples/example8.png")
     ;    sim (image-distance img1 img2)]

@@ -7,17 +7,13 @@
 (defn -main
   [& args]
   (let [image (read-image "input.png")
-        samples (take 10 (doquery :smc generate-image [image] :numer-of-particles 100))
-        samples-2 (collect-results samples)]
-    (println (first samples-2))))
-      
-
-    ;(save-many-images (map #(:image (:result %)) samples) "output/image")
-    ;(println (map
-    ;           #(image-distance
-    ;             (get-greyscale-pixels image)
-    ;             (get-greyscale-pixels (:image (:result %))))
-    ;          samples))))
+        samples (take 10 (doquery :lmh generate-image [image] :numer-of-particles 10000))]
+    (save-many-images (map #(:image (:result %)) samples) "output/image")
+    (println (map
+               #(image-distance
+                  image
+                 :image (:result %)))
+              samples)))
 
 ;(defn -main
 ;  [& args]
