@@ -8,22 +8,14 @@
   [& args]
   (let [image (read-image "input.png")
         samples (take 10 (drop 100
-                    (doquery :rmh generate-image [image] :numer-of-particles 10000)))]
+                               (doquery :rmh generate-image 
+                                        [image] :numer-of-particles 1000)))]
     (save-many-images (map #(:image (:result %)) samples) "output/image")
-    (println "same image      " (image-distance image image))
-    (println "different image " (image-distance (read-image "different.png") image))
-    (println "generated image " (image-distance (:image (:result (first samples))) image))
-    ;(println (map
-    ;          #(:facts (:result %))
-    ;          samples))
-))
+    (println "same image      " (image-similarity image image))
+    ;(println "different image " (image-similarity (read-image "different.png") image))
+    (println "generated image " (image-similarity (:image (:result (first samples))) image))
 
-;(defn -main
-;  [& args]
-;  (let [example-facts #{[:close :bear :soccer-ball]}
-;        samples (take 10 (doquery :importance generate-image-from-facts-query [example-facts]))]
-;    (save-many-images (map #(:result %) samples) "output/image")))
-
-;(defn -main
-;  [& args]
-;  (println (histogram (read-image "input.png"))))
+    (println (map
+               #(:facts (:result %))
+               samples))
+    ))
