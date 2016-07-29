@@ -72,7 +72,7 @@
    [:kicks :boy :soccer-ball]
    [:close :bear :soccer-ball]])
 
-(mapv reorder-fact example-facts)
+;; (mapv reorder-fact example-facts)
 
 (defn triples [list]
   (mapv vec (partition 3 1 (concat [nil] list [nil]))))
@@ -119,9 +119,9 @@
                           (if (= (get cur 0) (get cur 2))
                             [(reflexive-pronoun (get cur 0))]
                             nil)
-                          ;; (if (and prev (= (get cur 2) (get prev 2)))
-                          ;;   [(accusative-pronoun (get cur 2))]
-                          ;;   nil) ;; creates awkward sentences
+                          (if (and prev (= (get cur 2) (get prev 2)) (sample (flip 0.1)))
+                            [(accusative-pronoun (get cur 2))]
+                            nil) ;; flip(0.1) because this often creates awkward sentences
                           )]
                      (into [] (map sample-from-vector [translations-0 translations-1 translations-2]))))
           result (smart-join (apply concat (map handle (triples (map reorder-fact facts)))))]
@@ -150,3 +150,66 @@
           sentence' (sentenceify sentence)
           ]
       sentence')))
+
+(defn get-words [sentence]
+  (let [sentence (if (= \. (last sentence))
+                   (subs sentence 0 (dec (count sentence)))
+                   sentence)
+        words (vec (split sentence #" "))
+        init (first words)]
+    (assoc words 0
+           (if (contains? #{"Bob" "Alice"} init)
+             init
+             (lower-case init)))))
+
+;; (get-words "The bear is kicking itself.")
+
+(def all-words (vec (set (apply concat (apply concat (map #(map get-words %) (vals translations)))))))
+
+(defm sample-random-word []
+  (sample-from-vector all-words))
+
+(defn sample*-random-word []
+  (sample*-from-vector all-words))
+
+(defdist bag-of-words [word-count sentence other-p] []
+  (sample* [this]
+           (let [words (get-words sentence)]
+             (sentenceify (smart-join (repeatedly word-count sample*-random-word)))))
+  (observe* [this value] ;; TODO: check punctuation
+            (let [good-words (get-words sentence)
+                  num-good (count good-words)
+                  word-freq (frequencies good-words)
+                  words (get-words value)
+                  log-likelihood
+                  (fn [word]
+                    (if (contains? word-freq word)
+                      (- (log (word-freq word))
+                         (log num-good))
+                      (log other-p)))]
+              (if (= (count words) word-count)
+                (sum (map log-likelihood words))
+                Double/NEGATIVE_INFINITY))))
+
+(defdist resample-part [sentence p] []
+  (sample* [this]
+           (let [words (get-words sentence)]
+             (sentenceify
+              (smart-join
+               (map (fn [word]
+                      (if (sample* (flip p))
+                        (sample*-random-word)
+                        word)) words)))))
+  (observe* [this value]
+            (let [words (get-words sentence)
+                  words' (get-words value)]
+              (sum (map (fn [word word']
+                          (if (= word word')
+                            (log (- 1 p))
+                            (- (log p) (log (count all-words)))))
+                        words words')))))
+
+
+;;(contains? {1 2 3 4} 2)
+;;(/ 1.0 2)
+;; (observe* (bag-of-words 4 "Bob kicks the bear." 0.1) "Bob kicks the bear.")

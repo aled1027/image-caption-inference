@@ -41,5 +41,22 @@
       (get vector i))
     nil))
 
+(defn sample*-from-vector [vector]
+  (if (not= 0 (count vector))
+    (let [i (sample* (uniform-discrete 0 (count vector)))]
+      (get vector i))
+    nil))
+
+
 (defn concatv [& args]
   (into [] (apply concat args)))
+
+(defdist mixture-distribution [p dist-a dist-b] []
+  (sample* [this]
+           (if (sample* (flip p))
+             (sample* dist-a)
+             (sample* dist-b)))
+  (observe* [this value]
+            (log-sum-exp (+ (log p) (observe* dist-a value))
+                         (+ (log (- 1 p)) (observe* dist-b value)))))
+
