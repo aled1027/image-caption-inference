@@ -1,4 +1,6 @@
-(ns image_caption.globals)
+(ns image_caption.globals
+  (:use [anglican core runtime emit])
+  (:use [image_caption globals]))
 
 (def nouns
   [:boy
@@ -32,11 +34,21 @@
 
 ;; for testing
 (def all-clips [[{:sprite :boy :x 0 :y 30 :flip 0}
-                {:sprite :girl :x 109 :y 110 :flip 0}
-                {:sprite :soccer-ball :x 210 :y 200 :flip 0}
-                {:sprite :bear :x 51 :y 320 :flip 0}]
+                 {:sprite :girl :x 109 :y 110 :flip 0}
+                 {:sprite :soccer-ball :x 210 :y 200 :flip 0}
+                 {:sprite :bear :x 51 :y 320 :flip 0}]
 
                 [{:sprite :boy :x 100 :y 100 :flip 0}
-                {:sprite :girl :x 0 :y 0 :flip 1}
-                {:sprite :soccer-ball :x 100 :y 200 :flip 0}
-                {:sprite :bear :x 50 :y 50 :flip 1}]])
+                 {:sprite :girl :x 0 :y 0 :flip 1}
+                 {:sprite :soccer-ball :x 100 :y 200 :flip 0}
+                 {:sprite :bear :x 50 :y 50 :flip 1}]])
+
+(defm sample-from-vector [vector]
+  (if (not= 0 (count vector))
+    (let [i (sample (uniform-discrete 0 (count vector)))]
+      (get vector i))
+    nil))
+
+(defn concatv [& args]
+  (into [] (apply concat args)))
+

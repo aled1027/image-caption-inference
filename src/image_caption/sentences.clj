@@ -1,7 +1,7 @@
 (ns image_caption.sentences
   (:use [clojure string])
   (:use [anglican core runtime emit])
-  (:use [image_caption globals]))
+  (:use [image_caption globals facts]))
 
 (def translations
   {;; nouns
@@ -37,6 +37,11 @@
         (= noun :girl) "her"
         :else "it"))
 
+(defn reflexive-pronoun [noun]
+  (cond (= noun :boy) "himself"
+        (= noun :girl) "herself"
+        :else "itself"))
+
 (defdist shuffled
   "Uniform random permutation of the given vector."
   [vector] []
@@ -46,10 +51,6 @@
                    (sort value))
               (sum (map (comp - log) (range 1 (inc (count vector)))))
               Double/NEGATIVE_INFINITY)))
-
-
-(defn concatv [& args]
-  (into [] (apply concat args)))
 
 ;; (defn add-article [noun]
 ;;   ;; TODO: other articles
@@ -76,12 +77,6 @@
 (defn triples [list]
   (mapv vec (partition 3 1 (concat [nil] list [nil]))))
 
-(defm sample-from-vector [vector]
-  (if (not= 0 (count vector))
-    (let [i (sample (uniform-discrete 0 (count vector)))]
-      (get vector i))
-    nil))
-
 (defn smart-join [strings]
   (loop [cur nil
          strings strings]
@@ -93,7 +88,7 @@
       cur)))
 
 (with-primitive-procedures
-  [concatv pronoun reorder-fact triples relative-pronoun accusative-pronoun smart-join]
+  [concatv pronoun reorder-fact triples relative-pronoun accusative-pronoun reflexive-pronoun smart-join]
   (defm sample-sentence [facts]
     (let [pick-word (fn [word] (sample-from-vector (get translations word)))
           pick-noun (mem (fn [noun] (sample-from-vector (get translations noun))))
@@ -121,6 +116,9 @@
                          translations-2
                          (concatv
                           [(pick-noun (get cur 2))]
+                          (if (= (get cur 0) (get cur 2))
+                            [(reflexive-pronoun (get cur 0))]
+                            nil)
                           ;; (if (and prev (= (get cur 2) (get prev 2)))
                           ;;   [(accusative-pronoun (get cur 2))]
                           ;;   nil) ;; creates awkward sentences
@@ -152,16 +150,3 @@
           sentence' (sentenceify sentence)
           ]
       sentence')))
-
-(defquery query-sentence [facts]
-  (generate-sentence facts))
-
-(defquery query-short-sentence [facts]
-  (let [r (generate-sentence facts)]
-    (observe (exponential 10) (count r))
-    r))
-
-;; (take 100 (doquery :importance query-sentence [example-facts]))
-;; (first (drop 1500 (doquery :lmh query-short-sentence [example-facts])))
-
-
