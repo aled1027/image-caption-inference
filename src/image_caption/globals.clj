@@ -31,7 +31,9 @@
                :girl "resources/clipart_pngs/hb1_7s.png"
                :girl-kicking "resources/clipart_pngs/hb1_10s.png"
                :soccer-ball "resources/clipart_pngs/t_4s.png"
-               :bear "resources/clipart_pngs/a_0s.png"})
+               :soccer-ball-kicking "resources/clipart_pngs/t_4s_kicking.png"
+               :bear "resources/clipart_pngs/a_0s.png"
+               :bear-kicking "resources/clipart_pngs/a_0s_kicking.png"})
 
 ;; for testing
 (def all-clips [[{:sprite :boy :x 0 :y 30 :flip 0}

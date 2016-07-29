@@ -96,9 +96,15 @@
       (= relation :kicks)
         ; left sticks leg out, and left close to right, and left faces right
         (apply-facts
-          (if (= left :boy)
-            (update-entity entities left :sprite :boy-kicking)
-            (update-entity entities left :sprite :girl-kicking))
+          (cond
+            (= left :boy)
+              (update-entity entities left :sprite :boy-kicking)
+            (= left :girl)
+              (update-entity entities left :sprite :girl-kicking)
+            (= left :soccer-ball)
+              (update-entity entities left :sprite :soccer-ball-kicking)
+            :else
+              (update-entity entities left :sprite :bear-kicking))
           #{[:close left right] [:faces left right]})
       :else
         entities)))
