@@ -29,4 +29,4 @@
     (m/distance h_img1 h_img2)))
 
 (defn image-similarity [img1 img2]
-  (- (image-distance-blocked-histogram img1 img2)))
+  (* 100 (- (image-distance-blocked-histogram img1 img2))))

@@ -51,9 +51,9 @@
                   y (sample (uniform-continuous
                               (+ border-top (/ image-height 2))
                               (- image-height border-bottom)))
-                  flip (sample (uniform-discrete 0 1))
+                  the-flip (sample (uniform-discrete 0 1))
                   scale 1]
-              [noun {:sprite noun :x x :y y :flip flip :scale scale}]))
+              [noun {:sprite noun :x x :y y :flip the-flip :scale scale}]))
           nouns)))
 
 (defm update-entity [entities entity key value]
