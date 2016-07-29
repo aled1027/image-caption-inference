@@ -53,34 +53,36 @@ public class Image {
         _img_g.drawImage(clip_img, x, y, null);
     }
 
-    public int[] histogram(int new_width, int new_height, int scalex, int scaley) {
-        // scalex and scaley are scale factors for the resized image. 
-        // e.g. scalex = 0.5 will give an image with half the x coordinates
-        // http://stackoverflow.com/questions/15558202/how-to-resize-image-in-java
+  public int[] histogram(int inv_scale) {
+    // inv_scale is 1/scale of image to compute histogram from
+    // http://stackoverflow.com/questions/15558202/how-to-resize-image-in-java
 
-        
-    	BufferedImage scaled = new BufferedImage(new_width, new_height, BufferedImage.TYPE_INT_RGB);
-    	Graphics2D g = scaled.createGraphics();
-    	AffineTransform transformation = AffineTransform.getScaleInstance(scalex, scaley);
-    	g.drawRenderedImage(_img, transformation);
+    // Get grayscale version
+    BufferedImage gray_img = new BufferedImage(_width, _height, BufferedImage.TYPE_BYTE_GRAY);
+    Graphics g = gray_img.getGraphics();
+    g.drawImage(_img, 0, 0, null);
 
-        BufferedImage gray_scaled = new BufferedImage(new_width, new_height, BufferedImage.TYPE_BYTE_GRAY);
-        Graphics g2 = gray_scaled.getGraphics();
-        g2.drawImage(scaled, 0, 0, null);
+    // Scale down the image
+    int new_width = _width / 2;
+    int new_height = _height / 2;
+    BufferedImage scaled_img = new BufferedImage(new_width, new_height, BufferedImage.TYPE_INT_RGB);
+    Graphics2D scaled_g = scaled_img.createGraphics();
+    AffineTransform t = AffineTransform.getScaleInstance(0.5, 0.5);
+    scaled_g.drawRenderedImage(gray_img, t);
 
-        int histogram[] = new int[256];
-        for (int i = 0; i < 256; i++) {
-            histogram[i] = 0;
-        }
-
-        for (int x = 0; x < new_width; x++) {
-            for (int y = 0; y < new_height; y++) {
-                int pixel = gray_scaled.getRGB(x, y) & 0xFF;
-                histogram[pixel]++;
-            }
-        }
-        return histogram;
+    int histogram[] = new int[256];
+    for (int i = 0; i < 256; i++) {
+      histogram[i] = 0;
     }
+
+    for (int x = 0; x < new_width; x++) {
+      for (int y = 0; y < new_height; y++) {
+        int pixel = scaled_img.getRGB(x, y) & 0xFF;
+        histogram[pixel]++;
+      }
+    }
+    return histogram;
+  }
 
     public void save(String fileName) throws IOException {
         ImageIO.write(_img, "png", new File(fileName));
@@ -98,7 +100,7 @@ public class Image {
         int ret[][] = new int[_height][_width];
         for (int x = 0; x < _width; x++) {
             for (int y = 0; y < _height; y++) {
-                ret[y][x] = gray_img.getRGB(x, y)& 0xFF;
+                ret[y][x] = gray_img.getRGB(x, y) & 0xFF;
             }
         }
         return ret;
