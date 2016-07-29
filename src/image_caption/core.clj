@@ -8,8 +8,7 @@
 ;  [& args]
 ;  (let [image (read-image "input.png")
 ;        samples (take 10 (doquery :importance generate-image [image]))]
-;    (println (first samples))))
-;    ;(save-to-file (:image (:predicts (first samples))))))
+;    (save-image (:image (:result (first samples))) "output.png")))
 
 (defn -main
   [& args]

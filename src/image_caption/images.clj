@@ -156,13 +156,9 @@
   (generate-image-from-facts facts))
 
 ; generative model to find the facts for an image
-(with-primitive-procedures [render]
-  (defquery generate-image [image]
-    (let [
-      facts (simple-fact-prior)
-      generated-sprites (generate-image-from-facts facts)
-      generated-image (render generated-sprites)]
-    (predict :sprites generate-sprites)
-    (predict :image generated-image)
-    ;(observe (image-distribution generated-image) image)
-    facts)))
+(defquery generate-image [image]
+  (let [
+    facts (simple-fact-prior)
+    generated-image (generate-image-from-facts facts)]
+  ;(observe (image-distribution generated-image) image)
+  {:facts facts :image generated-image}))
