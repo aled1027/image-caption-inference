@@ -47,11 +47,16 @@
   (into {}
         (map
           (fn [noun]
-            (let [x (sample (uniform-continuous border-left (- image-width border-right)))
-                  y (sample (uniform-continuous
-                              (+ border-top (/ image-height 2))
-                              (- image-height border-bottom)))
-                  the-flip (sample (uniform-discrete 0 1))
+            (let [
+                  ;x (sample (uniform-continuous border-left (- image-width border-right)))
+                  ;y (sample (uniform-continuous
+                  ;            (+ border-top (/ image-height 2))
+                  ;            (- image-height border-bottom)))
+                  ;flip (sample (uniform-discrete 0 1))
+                  x (+ (sample (normal 0 (/ image-width 3))) (/ image-width 2))
+                  y (+ (sample (normal 0 (/ image-height 6))) (* 3 (/ image-height 4)))
+                  the-flip (if (< (sample (normal 0 1)) 0) 0 1)
+
                   scale 1]
               [noun {:sprite noun :x x :y y :flip the-flip :scale scale}]))
           nouns)))

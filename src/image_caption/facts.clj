@@ -15,3 +15,11 @@
                  (vec (repeatedly arity (fn [] (sample-from-vector nouns)))))))))))
 
 
+(with-primitive-procedures [concatv]
+  (defm subsample-fact-prior [facts]
+    (let [num-facts (sample (uniform-discrete 1 5))]
+      (repeatedly
+       num-facts
+       #(sample-from-vector facts)))))
+
+

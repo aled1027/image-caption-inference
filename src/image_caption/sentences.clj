@@ -7,7 +7,7 @@
   {;; nouns
    :boy ["Bob" "the boy"]
    :girl ["Alice" "the girl"]
-   :soccer-ball ["the soccer ball" "the ball"]
+   :soccer-ball ["the ball" "the soccer ball"] 
    :bear ["the bear" "the animal"]
    ;; verbs
    :close ["is close to"]
@@ -65,12 +65,6 @@
     (if (= 1 (:arity (get verbs verb)))
       (concatv (get nouns 0) [verb])
       (concatv [(get nouns 0)] [verb] [(get nouns 1)]))))
-
-(def example-facts
-  [[:kicks :girl :boy]
-   [:faces :bear :girl]
-   [:kicks :boy :soccer-ball]
-   [:close :bear :soccer-ball]])
 
 ;; (mapv reorder-fact example-facts)
 
@@ -133,6 +127,11 @@
 (defn sentenceify [string]
   (capitalize-sentence (str string ".")))
 
+
+
+(defn normalize-sentence [sentence]
+  (lower-case (apply str (re-seq #"[^,.]" sentence))))
+
 (defn make-passive [fact]
   [[:passive (get fact 0)] (get fact 2) (get fact 1)])
 
@@ -175,7 +174,7 @@
 (defdist bag-of-words [word-count sentence other-p] []
   (sample* [this]
            (let [words (get-words sentence)]
-             (sentenceify (smart-join (repeatedly word-count sample*-random-word)))))
+             (sentenceify (smart-join (repeatedly word-count sample*-random-word))))) ;; (wrong)
   (observe* [this value] ;; TODO: check punctuation
             (let [good-words (get-words sentence)
                   num-good (count good-words)
@@ -202,13 +201,16 @@
                         word)) words)))))
   (observe* [this value]
             (let [words (get-words sentence)
-                  words' (get-words value)]
-              (sum (map (fn [word word']
-                          (if (= word word')
-                            (log (- 1 p))
-                            (- (log p) (log (count all-words)))))
-                        words words')))))
-
+                  words' (get-words value)
+                  good-logp (log (- 1 p))
+                  bad-logp (- (log p) (log (count all-words)))]
+              (+ (sum (map (fn [word word']
+                             (if (= word word')
+                               good-logp
+                               bad-logp))
+                           words words'))
+                 (* bad-logp (abs (- (count words) (count words'))))
+                 ))))
 
 ;;(contains? {1 2 3 4} 2)
 ;;(/ 1.0 2)
