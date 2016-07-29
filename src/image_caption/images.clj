@@ -32,8 +32,7 @@
 ; extract the noun(s) from a fact
 ; TODO: assumes all facts are binary
 (defn nouns-from-fact [fact]
-  #{(nth fact 1) (nth fact 2)}
-)
+  (into #{} [(nth fact 1) (nth fact 2)]))
 
 ; a set of all nouns from a set of facts
 (defn nouns-from-facts [facts]
@@ -79,6 +78,9 @@
         left-entity (get entities left)
         right-entity (get entities right)]
     (cond
+      (= left right)
+        ; ignore relations for the same entity
+        entities
       (= relation :close)
         ; right is close to left
         (let [left-x (:x left-entity)
@@ -129,15 +131,14 @@
     image-background))
 
 ; distribution of score values given an image
-(defdist score-distribution
-  [img1] []
+(defdist image-distribution [img1] []
   (sample* [this] (assert false "can't sample from this - dummy!"))
   (observe* [this img2]
             ; Alex L changning ths
             (image-distance img1 img2)))
 
 ; generate an image from some facts
-(with-primitive-procedures [nouns-from-facts]
+(with-primitive-procedures [nouns-from-facts render]
   (defm generate-image-from-facts [facts]
     (let [
       ; the entities (the nouns mentioned in the facts)
@@ -153,13 +154,13 @@
   (generate-image-from-facts facts))
 
 ; generative model to find the facts for an image
-(defquery generate-image [image]
-  (let [
-    facts simple-fact-prior
-    ; generate image
-    generated-sprites (generate-image facts)
-    generated-image (render generated-sprites)
-    ; compute similarity
-    dist (score-distribution generated-image)]
-  (observe dist image)
-  facts))
+(with-primitive-procedures [render]
+  (defquery generate-image [image]
+    (let [
+      facts (simple-fact-prior)
+      generated-sprites (generate-image-from-facts facts)
+      generated-image (render generated-sprites)]
+    (predict :sprites generate-sprites)
+    (predict :image generated-image)
+    ;(observe (image-distribution generated-image) image)
+    facts)))
