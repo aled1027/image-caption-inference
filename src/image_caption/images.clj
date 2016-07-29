@@ -45,21 +45,21 @@
 
 (defm initial-entities [nouns]
   (into {}
-    (map
-      (fn [noun]
-        (let [x (sample (uniform-discrete border-left (- image-width border-right)))
-              y (sample (uniform-discrete
-                          (+ border-top (/ image-height 2))
-                          (- image-height border-bottom)))
-              flip (sample (uniform-discrete 0 1))
-              scale (sample (uniform-continuous 0.7 1))]
-          [noun {:sprite noun :x x :y y :flip flip :scale scale}]))
-      nouns)))
+        (map
+          (fn [noun]
+            (let [x (sample (uniform-discrete border-left (- image-width border-right)))
+                  y (sample (uniform-discrete
+                              (+ border-top (/ image-height 2))
+                              (- image-height border-bottom)))
+                  flip (sample (uniform-discrete 0 1))
+                  scale (sample (uniform-continuous 0.7 1))]
+              [noun {:sprite noun :x x :y y :flip flip :scale scale}]))
+          nouns)))
 
 (defm update-entity [entities entity key value]
   (let [x (get entities entity)
         new-x (assoc x key value)]
-   (assoc entities entity new-x)))
+    (assoc entities entity new-x)))
 
 (declare apply-facts)
 
@@ -79,38 +79,38 @@
         right-entity (get entities right)]
     (cond
       (= left right)
-        ; ignore relations for the same entity
-        entities
+      ; ignore relations for the same entity
+      entities
       (= relation :close)
-        ; right is close to left
-        (let [left-x (:x left-entity)
-              left-y (:y left-entity)
-              x (sample-close-x-to left-x)
-              y (sample-close-y-to left-y)]
-            (update-entity (update-entity entities right :y y) right :x x))
+      ; right is close to left
+      (let [left-x (:x left-entity)
+            left-y (:y left-entity)
+            x (sample-close-x-to left-x)
+            y (sample-close-y-to left-y)]
+        (update-entity (update-entity entities right :y y) right :x x))
       (= relation :faces)
-        ; left faces right
-        (let [left-x (:x left-entity)
-              right-x (:x right-entity)]
-          (if (< left-x right-x)
-            (update-entity entities left :flip 0)
-            (update-entity entities left :flip 1)))
+      ; left faces right
+      (let [left-x (:x left-entity)
+            right-x (:x right-entity)]
+        (if (< left-x right-x)
+          (update-entity entities left :flip 0)
+          (update-entity entities left :flip 1)))
       (= relation :kicks)
-        ; left sticks leg out, and left close to right, and left faces right
-        (apply-facts
-          (cond
-            (= left :boy)
-              (update-entity entities left :sprite :boy-kicking)
-            (= left :girl)
-              (update-entity entities left :sprite :girl-kicking)
-            (= left :soccer-ball)
-              (update-entity entities left :sprite :soccer-ball-kicking)
-            :else
-              (update-entity entities left :sprite :bear-kicking))
-          ; FIXME: ordering here matters! Also between results
-          #{[:close left right] [:faces left right]})
+      ; left sticks leg out, and left close to right, and left faces right
+      (apply-facts
+        (cond
+          (= left :boy)
+          (update-entity entities left :sprite :boy-kicking)
+          (= left :girl)
+          (update-entity entities left :sprite :girl-kicking)
+          (= left :soccer-ball)
+          (update-entity entities left :sprite :soccer-ball-kicking)
+          :else
+          (update-entity entities left :sprite :bear-kicking))
+        ; FIXME: ordering here matters! Also between results
+        #{[:close left right] [:faces left right]})
       :else
-        entities)))
+      entities)))
 
 (defm apply-facts [entities facts]
   (if (seq facts)
@@ -136,23 +136,21 @@
   [img1pixels (get-greyscale-pixels img1)]
   (sample* [this] (assert false "can't sample from this - dummy!"))
   (observe* [this img2]
-            ; Alex L changning ths
-            (image-distance img1 img2)))
-            ;(image-distance img1pixels (get-greyscale-pixels img2))))
+            (* 100 (image-distance img1 img2))))
 
 ; generate an image from some facts
 (with-primitive-procedures [nouns-from-facts render]
   (defm generate-image-from-facts [facts]
     (let [
-      ; the entities (the nouns mentioned in the facts)
-      entities (initial-entities (nouns-from-facts facts))
-      ; modify the entities using the facts
-      entities (apply-facts entities facts)
-      ; generate image description for the entities
-      sprites (generate-sprites entities)
-      ; render image from the sprites
-      image (render sprites)]
-    image)))
+          ; the entities (the nouns mentioned in the facts)
+          entities (initial-entities (nouns-from-facts facts))
+          ; modify the entities using the facts
+          entities (apply-facts entities facts)
+          ; generate image description for the entities
+          sprites (generate-sprites entities)
+          ; render image from the sprites
+          image (render sprites)]
+      image)))
 
 ; query to generate an image from some facts
 (defquery generate-image-from-facts-query [facts]
@@ -160,9 +158,8 @@
 
 ; generative model to find the facts for an image
 (with-primitive-procedures [image-distribution]
-(defquery generate-image [image]
-  (let [
-    facts (simple-fact-prior)
-    generated-image (generate-image-from-facts facts)]
-  (observe (image-distribution generated-image) image)
-  {:facts facts :image generated-image})))
+  (defquery generate-image [image]
+    (let [facts (simple-fact-prior)
+          generated-image (generate-image-from-facts facts)]
+      (observe (image-distribution generated-image) image)
+      {:facts facts :image generated-image})))

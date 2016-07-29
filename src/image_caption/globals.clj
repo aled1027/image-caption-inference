@@ -47,7 +47,6 @@
       (get vector i))
     nil))
 
-
 (defn concatv [& args]
   (into [] (apply concat args)))
 
