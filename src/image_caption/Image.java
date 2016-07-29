@@ -53,7 +53,7 @@ public class Image {
         _img_g.drawImage(clip_img, x, y, null);
     }
 
-  public int[] histogram(int inv_scale) {
+  public int[] scaled_histogram(int inv_scale) {
     // inv_scale is 1/scale of image to compute histogram from
     // http://stackoverflow.com/questions/15558202/how-to-resize-image-in-java
 
@@ -84,7 +84,36 @@ public class Image {
     return histogram;
   }
 
-    public void save(String fileName) throws IOException {
+
+  public int[] blocked_histogram(int nblocks) {
+    // nblocks is number of blocks in each exis
+
+    // Get grayscale version
+    BufferedImage gray_img = new BufferedImage(_width, _height, BufferedImage.TYPE_BYTE_GRAY);
+    Graphics g = gray_img.getGraphics();
+    g.drawImage(_img, 0, 0, null);
+
+    int histogram[] = new int[256*nblocks*nblocks];
+    for (int i = 0; i < 256*nblocks*nblocks; i++) {
+      histogram[i] = 0;
+    }
+
+    for (int x = 0; x < _width; x++) {
+      for (int y = 0; y < _height; y++) {
+        int pixel = gray_img.getRGB(x, y) & 0xFF;
+        int blockx = x / (_width/nblocks);
+        int blocky = y / (_height/nblocks);
+        int blockidx = (nblocks*blockx) + blocky;
+        int idx = pixel + (blockidx*256);
+        //System.out.println("x: " + x + " y: " + y + " bx:" + blockx + " by: " + blocky + " bidx:" + blockidx + " idx:" + idx);
+        histogram[idx]++;
+      }
+    }
+    return histogram;
+  }
+
+
+  public void save(String fileName) throws IOException {
         ImageIO.write(_img, "png", new File(fileName));
     }
 

@@ -29,25 +29,27 @@
         dist (m/distance r_img1 r_img2)]
     dist))
 
-(defn histogram [image]
-  (let [hist (.histogram image 2)]
+(defn scaled-histogram [image]
+  (let [hist (.scaled_histogram image 2)]
     (seq hist)))
 
 (defn image-distance-scaled-histogram [img1 img2]
-  (let [h_img1 (m/to-vector (histogram img1))
-        h_img2 (m/to-vector (histogram img2))
+  (let [h_img1 (m/to-vector (scaled-histogram img1))
+        h_img2 (m/to-vector (scaled-histogram img2))
+        dist (m/distance h_img1 h_img2)
+        scaled_dist (/ dist (* image-width image-height))]
+    scaled_dist))
+
+(defn blocked-histogram [image]
+  (let [hist (.blocked_histogram image 8)]
+    (seq hist)))
+
+(defn image-distance-blocked-histogram [img1 img2]
+  (let [h_img1 (m/to-vector (blocked-histogram img1))
+        h_img2 (m/to-vector (blocked-histogram img2))
         dist (m/distance h_img1 h_img2)
         scaled_dist (/ dist (* image-width image-height))]
     scaled_dist))
 
 (defn image-distance [img1 img2]
-  (image-distance-scaled-histogram img1 img2))
-
-(defn test-image-distance []
-  (let [img1 (read-image "resources/examples/example1.png")]
-        (println (histogram img1))))
-
-    ;    img2 (read-image "resources/examples/example8.png")
-    ;    sim (image-distance img1 img2)]
-    ;(println sim)))
-
+  (image-distance-blocked-histogram img1 img2))
