@@ -60,3 +60,4 @@
             (log-sum-exp (+ (log p) (observe* dist-a value))
                          (+ (log (- 1 p)) (observe* dist-b value)))))
 
+

@@ -33,6 +33,7 @@
     (range 0 (count many-sprites))))
 
 (defn read-image [filename]
-  "Read an image from disk. Returns a 2D array of greyscale pixel values."
+  "Read an image from disk. Returns a 2D array of greyscale pixel values.
+  If running from project root, use (read-image resources/examples/example0.png"
   (.load renderer filename)
   (mapv #(into [] %) (seq (.getGrayscalePixels renderer))))

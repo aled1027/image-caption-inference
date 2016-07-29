@@ -1,8 +1,9 @@
 (ns image_caption.core
-  (:use [image_caption globals images sentences images_renderer])
+  (:use [image_caption globals images sentences images_renderer images_similarity])
   (:use [anglican.core :exclude [-main]])
   (:use [anglican runtime emit])
   (:gen-class))
+
 
 (defn -main
   [& args]
