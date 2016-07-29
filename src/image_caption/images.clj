@@ -41,7 +41,7 @@
     (map
       (fn [noun]
         (let [x (sample (uniform-discrete border-width (- image-width border-width)))
-              y (sample (uniform-discrete border-width (- image-width border-width)))
+              y (sample (uniform-discrete border-width (- image-height border-width)))
               flip (sample (uniform-discrete 0 1))]
           [noun {:sprite noun :x x :y y :flip flip}]))
       nouns)))
