@@ -1,13 +1,13 @@
 (ns image_caption.core
-  (:use [image_caption globals images sentences clipart])
+  (:use [image_caption globals images sentences images_renderer])
   (:use [anglican.core :exclude [-main]])
   (:use [anglican runtime emit])
-  (:gen-class)
-  (:import [robots.Clipart Clipart]))
+  (:gen-class))
 
 (defn -main
   [& args]
-  (let [example-facts #{[:kicks :boy :girl]}
-        image-samples (take 50 (doquery :importance generate-image-from-facts-query [example-facts]))
+  (let [example-facts #{[:kicks :bear :soccer-ball] [:kicks :boy :soccer-ball]}
+        image-samples (take 10 (doquery :importance generate-image-from-facts-query [example-facts]))
         images (map #(:result %) image-samples)]
-    (render-many-to-files images "output/image")))
+    (render-many-to-files images "output/image")
+    (println (render (first images)))))

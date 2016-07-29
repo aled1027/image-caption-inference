@@ -1,4 +1,4 @@
-(ns image_caption.imagesimilarity
+(ns image_caption.images_similarity
   (:use [clojure string])
   (:use [anglican core runtime emit])
   (:use [image_caption globals])

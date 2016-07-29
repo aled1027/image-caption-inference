@@ -1,7 +1,7 @@
 (ns image_caption.images
   (:use [clojure set])
   (:use [anglican core runtime emit])
-  (:use [image_caption globals facts clipart imagesimilarity]))
+  (:use [image_caption globals facts images_renderer images_similarity]))
 
 ; Generative model from scene description to image description
 
