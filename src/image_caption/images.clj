@@ -53,12 +53,19 @@
                   ;            (+ border-top (/ image-height 2))
                   ;            (- image-height border-bottom)))
                   ;flip (sample (uniform-discrete 0 1))
-                  x (+ (sample (normal 0 (/ image-width 3))) (/ image-width 2))
-                  y (+ (sample (normal 0 (/ image-height 6))) (* 3 (/ image-height 4)))
+                  mu-x (/ image-width 2)
+                  mu-y (* 3 (/ image-height 4))
+                  var-x (/ image-width 10)
+                  var-y (/ image-width 10)
+                  x (sample (normal mu-x var-x))
+                  y (sample (normal mu-y var-y))
+                  x (if (< x 0) 0 x)
+                  x (if (> x image-width) image-width x)
+                  y (if (< y 0) 0 y)
+                  y (if (> y image-height) image-height y)
                   the-flip (if (< (sample (normal 0 1)) 0) 0 1)
-
                   scale 1]
-              [noun {:sprite noun :x x :y y :flip the-flip :scale scale}]))
+               [noun {:sprite noun :x x :y y :flip the-flip :scale scale}]))
           nouns)))
 
 (defm update-entity [entities entity key value]
