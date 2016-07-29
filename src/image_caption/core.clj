@@ -19,3 +19,9 @@
                #(:facts (:result %))
                samples))
     ))
+
+;(defn -main
+;  [& args]
+;  (let [facts #{[:kicks :girl :boy]}
+;        sample (first (take 1 (doquery :importance generate-image-from-facts-query [facts])))]
+;    (save-image (:result sample) "output.png")))
