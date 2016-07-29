@@ -20,6 +20,7 @@
 ;
 
 ;; Globals for rendering image
+(def image-reduction-constant 50)
 (def image-width 1024) ; Width of CAPTCHA
 (def image-height 768) ; Height of CAPTCHA
 (def clip-map {:boy "resources/clipart_pngs/hb0_7s.png" 

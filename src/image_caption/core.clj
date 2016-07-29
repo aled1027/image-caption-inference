@@ -2,6 +2,7 @@
   (:use [image_caption globals images sentences])
   (:use [anglican.core :exclude [-main]])
   (:use [anglican runtime emit])
+  (:require [clojure.core.matrix :as m])
   (:gen-class)
   (:import [robots.Clipart Clipart]))
 
@@ -46,45 +47,59 @@
   ;; normalizes a vector
   (let [squared (vector-dot xs xs)
         summed (reduce + squared)
-        square-root (sqrt summed)]
-    (map (fn [x] (/ x square-root)) xs)))
+        square-root (sqrt summed)
+        final (map (fn [x] (/ x square-root)) xs)]
+    final))
+
+(defn image-euclidean-distance [img1 img2] 
+  ;; computes absolute value of euclidean distance between two images
+  ;; i.e. a value between 0 and 1
+  (let [img1 (m/to-vector img1)
+        img2 (m/to-vector img2)]
+    (m/distance img1 img2)))
+
+
+(defn get-random-projection-matrix [n m]
+  (m/matrix 
+    (vec 
+      (take n (repeatedly
+                (fn [] 
+                  (vec (take m (repeatedly #(sample* (uniform-discrete -1 2)))))))))))
+
+(defn reduce-dim [im]
+  (let [mat (m/matrix im)
+        proj1 (get-random-projection-matrix image-reduction-constant image-height)
+        proj2 (get-random-projection-matrix image-width image-reduction-constant)
+        times (m/mmul proj1 (m/mmul mat proj2))]
+    (m/normalise (m/to-vector times))))
 
 (defn image-similarity [img1 img2] 
-  ;; computes absolute value of cosine distance between two images
-  ;; i.e. a value between 0 and 1
-  (let [img1 (flatten img1)
-        img2 (flatten img2)
-        numer (reduce + (vector-dot img1 img2))
-        denom1 (sqrt (reduce + (vector-dot img1 img1)))
-        denom2 (sqrt (reduce + (vector-dot img2 img2)))
-        denom (* denom1 denom2)
-        final (abs (/ numer denom))]
-    final))
+  (image-euclidean-similarity 
+    (reduce-dim img1)
+    (reduce-dim img2)))
 
 (defn dist-test []
   (let [img1 (render (nth all-clips 0))
         img2 (render (nth all-clips 1))]
     (println (image-similarity img1 img2))))
 
-;(defn alex-ledger-func []
-;  (println "running alex-ledger-func")
-;  (println (dist-test)))
-;(defn alex-ledger-func []
-;  (println "running alex-ledger-func")
-;  (println (render-many all-clips)))
-;
-;(defn -main
-;  "I don't do a whole lot ... yet."
-;  [& args]
-;  (alex-ledger-func))
+(defn alex-ledger-func []
+  (println "running alex-ledger-func")
+  (dist-test))
+;(println (dist-test)))
 
 (defn -main
+  "I don't do a whole lot ... yet."
   [& args]
-  (let [example-facts #{[:kicks :boy :girl] [:close :bear :soccer-ball]}
-        image-samples (take 100 (doquery :importance generate-image [example-facts]))
-        sentence-samples (take 100 (doquery :importance generate-sentence [example-facts]))
-        image-sample (first image-samples)
-        sentence-sample (first sentence-samples)]
-    (println (get image-sample :result))
-    (println (get sentence-sample :result))
-    (render-to-file (image-sample :result) "example-facts")))
+  (alex-ledger-func))
+
+;(defn -main
+;  [& args]
+;  (let [example-facts #{[:kicks :boy :girl] [:close :bear :soccer-ball]}
+;        image-samples (take 100 (doquery :importance generate-image [example-facts]))
+;        sentence-samples (take 100 (doquery :importance generate-sentence [example-facts]))
+;        image-sample (first image-samples)
+;        sentence-sample (first sentence-samples)]
+;    (println (get image-sample :result))
+;    (println (get sentence-sample :result))
+;    (render-to-file (image-sample :result) "example-facts")))
