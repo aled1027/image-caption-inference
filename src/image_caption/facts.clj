@@ -14,7 +14,4 @@
                  [verb]
                  (vec (repeatedly arity (fn [] (sample-from-vector nouns)))))))))))
 
-(defquery sample-facts []
-  (simple-fact-prior))
-
 
