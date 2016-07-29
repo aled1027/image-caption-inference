@@ -2,12 +2,10 @@
   (:use [image_caption globals])
   (:import [image_caption Image]))
 
-(def renderer (Image. image-width image-height))
-
-(defn render-sprite [sprite]
-  "Draw a sprite into the current renderer"
+(defn render-sprite [image sprite]
+  "Draw a sprite into the given image"
   (.renderSprite
-    renderer
+    image
     ((:sprite sprite) sprite-map)
     (:x sprite)
     (:y sprite)
@@ -15,32 +13,35 @@
     (:scale sprite)))
 
 (defn render [sprites]
-  "Render image from a list of sprites. Returns a 2D array of greyscale pixel values."
-  (mapv render-sprite sprites)
-  (mapv #(into [] %) (seq (.getGrayscalePixels renderer))))
+  "Render image from a list of sprites. Returns an image object."
+  (let [image (Image. image-width image-height)]
+    (mapv #(render-sprite image %) sprites)
+    image))
 
-(defn render-to-file [sprites filename]
-  "Render and save an image to a file. Renders an RGB image."
+(defn save-image [image filename]
+  "Write an image to a file."
   (println "Writing image to " filename)
-  (mapv render-sprite sprites)
-  (.save renderer filename))
+  (.save image filename))
 
-(defn render-many-to-files [many-sprites path]
-  "Render and save multiple images to file, with the given filename prefix"
+(defn save-many-images [images path-prefix]
+  "Save multiple images to file, with the given filename prefix"
   (mapv
-    (fn [sprites i] (render-to-file sprites (str path i ".png")))
-    many-sprites
-    (range 0 (count many-sprites))))
+    (fn [image i] (save-image image (str path-prefix i ".png")))
+    images
+    (range 0 (count images))))
 
 (defn read-image [filename]
   "Read an image from disk. Returns a 2D array of greyscale pixel values.
   If running from project root, use (read-image resources/examples/example0.png"
-  (.load renderer filename)
-  (mapv #(into [] %) (seq (.getGrayscalePixels renderer))))
+  (let [image (Image. image-width image-height)]
+    (.load image filename)
+    image))
 
-(defn histogram []
+(defn histogram [image]
   (let [scale 0.5
-        java-hist (.histogram renderer (* scale image-width) (* scale image-height) scale scale)
+        java-hist (.histogram image (* scale image-width) (* scale image-height) scale scale)
         hist (seq java-hist)]
     hist))
 
+(defn get-greyscale-pixels [image]
+  (mapv #(into [] %) (seq (.getGrayscalePixels image))))

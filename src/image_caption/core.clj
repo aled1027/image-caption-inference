@@ -4,13 +4,20 @@
   (:use [anglican runtime emit])
   (:gen-class))
 
-
 (defn -main
   [& args]
-  (test-image-distance))
+  (let [image (read-image "input.png")
+        samples (take 10 (doquery :smc generate-image [image] :numer-of-particles 1000))]
+    (println (first samples))
+    (save-many-images (map #(:image (:result %)) samples) "output/image")
+    (println (map
+               #(image-distance
+                 (get-greyscale-pixels image)
+                 (get-greyscale-pixels (:image (:result %))))
+              samples))))
 
-  ;(let [example-facts #{[:kicks :bear :soccer-ball] [:kicks :boy :soccer-ball]}
-  ;      image-samples (take 10 (doquery :importance generate-image-from-facts-query [example-facts]))
-  ;      images (map #(:result %) image-samples)]
-  ;  (render-many-to-files images "output/image")
-  ;  (println (render (first images)))))
+;(defn -main
+;  [& args]
+;  (let [example-facts #{[:kicks :bear :soccer-ball] [:kicks :boy :soccer-ball]}
+;        samples (take 10 (doquery generate-image-from-facts-query [example-facts]))]
+;    (save-many-images (map #(:result %) samples) "output/image")))

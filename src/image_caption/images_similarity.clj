@@ -31,7 +31,7 @@
 
 (defn test-image-distance []
   (let [img1 (read-image "resources/examples/example1.png")]
-        (println (histogram))))
+        (println (histogram img1))))
 
 
 
