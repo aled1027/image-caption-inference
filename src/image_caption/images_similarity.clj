@@ -35,21 +35,17 @@
 
 (defn image-distance-scaled-histogram [img1 img2]
   (let [h_img1 (m/to-vector (scaled-histogram img1))
-        h_img2 (m/to-vector (scaled-histogram img2))
-        dist (m/distance h_img1 h_img2)
-        scaled_dist (/ dist (* image-width image-height))]
-    (* 100 scaled_dist)))
+        h_img2 (m/to-vector (scaled-histogram img2))]
+    (m/distance h_img1 h_img2)))
 
 (defn blocked-histogram [image]
-  (let [hist (.blocked_histogram image 8)]
+  (let [hist (.blocked_histogram image 16)]
     (seq hist)))
 
 (defn image-distance-blocked-histogram [img1 img2]
   (let [h_img1 (m/to-vector (blocked-histogram img1))
-        h_img2 (m/to-vector (blocked-histogram img2))
-        dist (m/distance h_img1 h_img2)
-        scaled_dist (/ dist (* (/ image-width 16) (/ image-height 16)))]
-    (* 100 scaled_dist)))
+        h_img2 (m/to-vector (blocked-histogram img2))]
+    (m/distance h_img1 h_img2)))
 
 (defn image-distance [img1 img2]
   (image-distance-blocked-histogram img1 img2))

@@ -8,7 +8,7 @@
   [& args]
   (let [image (read-image "input.png")
         samples (take 10 (drop 100
-                    (doquery :lmh generate-image [image] :numer-of-particles 1000)))]
+                    (doquery :rmh generate-image [image] :numer-of-particles 10000)))]
     (save-many-images (map #(:image (:result %)) samples) "output/image")
     (println "same image      " (image-distance image image))
     (println "different image " (image-distance (read-image "different.png") image))
