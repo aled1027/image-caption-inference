@@ -11,6 +11,7 @@
       (take m (repeatedly
                 (fn []
                   (vec (take n (repeatedly #(sample* (uniform-discrete -1 2)))))))))))
+
 (def proj1
   (get-random-projection-matrix image-reduction-constant image-height))
 
@@ -29,8 +30,13 @@
     dist))
 
 (defn test-image-distance []
-  (let [img1 (read-image "resources/examples/example0.png")
-        img2 (read-image "resources/examples/example8.png")
-        sim (image-distance img1 img2)]
-    (println sim)))
+  (let [img1 (read-image "resources/examples/example1.png")]
+        (println (histogram))))
+
+
+
+
+    ;    img2 (read-image "resources/examples/example8.png")
+    ;    sim (image-distance img1 img2)]
+    ;(println sim)))
 

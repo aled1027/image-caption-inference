@@ -7,8 +7,10 @@
 
 (defn -main
   [& args]
-  (let [example-facts #{[:kicks :bear :soccer-ball] [:kicks :boy :soccer-ball]}
-        image-samples (take 10 (doquery :importance generate-image-from-facts-query [example-facts]))
-        images (map #(:result %) image-samples)]
-    (render-many-to-files images "output/image")
-    (println (render (first images)))))
+  (test-image-distance))
+
+  ;(let [example-facts #{[:kicks :bear :soccer-ball] [:kicks :boy :soccer-ball]}
+  ;      image-samples (take 10 (doquery :importance generate-image-from-facts-query [example-facts]))
+  ;      images (map #(:result %) image-samples)]
+  ;  (render-many-to-files images "output/image")
+  ;  (println (render (first images)))))

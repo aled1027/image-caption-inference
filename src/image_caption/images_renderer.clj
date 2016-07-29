@@ -37,3 +37,10 @@
   If running from project root, use (read-image resources/examples/example0.png"
   (.load renderer filename)
   (mapv #(into [] %) (seq (.getGrayscalePixels renderer))))
+
+(defn histogram []
+  (let [scale 0.5
+        java-hist (.histogram renderer (* scale image-width) (* scale image-height) scale scale)
+        hist (seq java-hist)]
+    hist))
+
