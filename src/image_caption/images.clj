@@ -1,7 +1,7 @@
 (ns image_caption.images
   (:use [clojure set])
   (:use [anglican core runtime emit])
-  (:use [image_caption globals]))
+  (:use [image_caption globals facts clipart imagesimilarity]))
 
 ; Generative model from scene description to image description
 
@@ -39,7 +39,6 @@
         (recur (union nouns new-nouns) (rest facts)))
       nouns)))
 
-
 (defm initial-entities [nouns]
   (into {}
     (map
@@ -54,7 +53,6 @@
   (let [x (get entities entity)
         new-x (assoc x key value)]
    (assoc entities entity new-x)))
-
 
 (declare apply-facts)
 
@@ -99,7 +97,6 @@
     (apply-fact (apply-facts entities (rest facts)) (first facts))
     entities))
 
-
 (defm generate-sprite [value]
   (let [entity (nth value 1)]
     {:sprite (get entity :sprite)
@@ -110,9 +107,16 @@
 (defm generate-sprites [entities]
   (map generate-sprite (seq entities)))
 
+; distribution of score values given an image
+(defdist score-distribution
+  [img1] []
+  (sample* [this] (assert false "can't sample from this - dummy!"))
+  (observe* [this img2]
+            (image-similarity img1 img2)))
 
+; generate an image from some facts
 (with-primitive-procedures [nouns-from-facts]
-  (defquery generate-image [facts]
+  (defm generate-image-from-facts [facts]
     (let [
       ; the entities (the nouns mentioned in the facts)
       entities (initial-entities (nouns-from-facts facts))
@@ -121,3 +125,19 @@
       ; generate image description for the entities
       sprites (generate-sprites entities)]
     sprites)))
+
+; query to generate an image from some facts
+(defquery generate-image-from-facts-query [facts]
+  (generate-image-from-facts facts))
+
+; generative model to find the facts for an image
+(defquery generate-image [image]
+  (let [
+    facts simple-fact-prior
+    ; generate image
+    generated-sprites (generate-image facts)
+    generated-image (render generated-sprites)
+    ; compute similarity
+    dist (score-distribution generated-image)]
+  (observe dist image)
+  facts))

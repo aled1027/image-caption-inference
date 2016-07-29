@@ -1,7 +1,8 @@
-(ns image_caption.image_distance
+(ns image_caption.imagesimilarity
   (:use [clojure string])
   (:use [anglican core runtime emit])
-  (:use [image_caption globals]))
+  (:use [image_caption globals])
+  (:require [clojure.core.matrix :as m]))
 
 (defn vector-dot [xs ys]
   ;; computes the dot product between two vectors
