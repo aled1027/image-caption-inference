@@ -105,7 +105,9 @@
      :flip (get entity :flip)}))
 
 (defm generate-sprites [entities]
-  (map generate-sprite (seq entities)))
+  (conj
+    (map generate-sprite (seq entities))
+    {:sprite :background :x 0 :y 0 :flip 0}))
 
 ; distribution of score values given an image
 (defdist score-distribution

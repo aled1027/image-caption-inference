@@ -25,7 +25,8 @@
 (def image-reduction-constant 50)
 (def image-width 1024) ; Width of CAPTCHA
 (def image-height 768) ; Height of CAPTCHA
-(def clip-map {:boy "resources/clipart_pngs/hb0_7s.png"
+(def clip-map {:background "resources/clipart_pngs/background.png"
+               :boy "resources/clipart_pngs/hb0_7s.png"
                :boy-kicking "resources/clipart_pngs/hb0_13s.png"
                :girl "resources/clipart_pngs/hb1_7s.png"
                :girl-kicking "resources/clipart_pngs/hb1_10s.png"
