@@ -1,4 +1,4 @@
-(ns image_caption.test
+(ns image_caption.parse
   (:use [clojure string])
   (:use [anglican core runtime emit stat])
   (:use [image_caption globals facts sentences]))
