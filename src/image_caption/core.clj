@@ -46,7 +46,7 @@
 
 (defn -main
   [& args]
-  (let [example-facts #{[:faces :boy :girl] [:close :boy :girl] [:close :bear :soccer-ball]}
+  (let [example-facts #{[:kicks :boy :girl]}
         image-samples (take 100 (doquery :importance generate-image [example-facts]))
         ;sentence-samples (take 100 (doquery :importance generate-sentence [example-facts]))
         image-sample (first image-samples)

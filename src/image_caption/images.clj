@@ -52,6 +52,8 @@
    (assoc entities entity new-x)))
 
 
+(declare apply-facts)
+
 (defm apply-fact [entities fact]
   (let [relation (nth fact 0)
         left (nth fact 1)
@@ -73,6 +75,13 @@
           (if (< left-x right-x)
             (update-entity entities left :flip 0)
             (update-entity entities left :flip 1)))
+      (= relation :kicks)
+        ; left sticks leg out, and left close to right, and left faces right
+        (apply-facts
+          (if (= left :boy)
+            (update-entity entities left :sprite :boy-kicking)
+            (update-entity entities left :sprite :girl-kicking))
+          #{[:close left right] [:faces left right]})
       :else
         entities)))
 

@@ -23,7 +23,9 @@
 (def image-width 1024) ; Width of CAPTCHA
 (def image-height 768) ; Height of CAPTCHA
 (def clip-map {:boy "resources/clipart_pngs/hb0_7s.png"
+               :boy-kicking "resources/clipart_pngs/hb0_13s.png"
                :girl "resources/clipart_pngs/hb1_7s.png"
+               :girl-kicking "resources/clipart_pngs/hb1_10s.png"
                :soccer-ball "resources/clipart_pngs/t_4s.png"
                :bear "resources/clipart_pngs/a_0s.png"})
 
@@ -37,5 +39,3 @@
                 {:sprite :girl :x 0 :y 0 :flip true}
                 {:sprite :soccer-ball :x 100 :y 200 :flip false}
                 {:sprite :bear :x 50 :y 50 :flip true}]])
-
-
