@@ -136,7 +136,7 @@
   [img1pixels (get-greyscale-pixels img1)]
   (sample* [this] (assert false "can't sample from this - dummy!"))
   (observe* [this img2]
-            (- (image-distance img1 img2))))
+            (image-similarity img1 img2)))
 
 ; expand a fact, such as :kicks a b into :faces a b and :close a b
 (defn expand-fact [fact]
