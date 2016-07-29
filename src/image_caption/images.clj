@@ -105,6 +105,7 @@
               (update-entity entities left :sprite :soccer-ball-kicking)
             :else
               (update-entity entities left :sprite :bear-kicking))
+          ; FIXME: ordering here matters! Also between results
           #{[:close left right] [:faces left right]})
       :else
         entities)))
