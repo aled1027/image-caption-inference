@@ -4,6 +4,8 @@
   (:use [image_caption globals images_renderer])
   (:require [clojure.core.matrix :as m]))
 
+(def block-size 32)
+
 (defn scaled-histogram [image]
   (let [hist (.scaled_histogram image 2)]
     (seq hist)))
@@ -13,8 +15,12 @@
         h_img2 (m/to-vector (scaled-histogram img2))]
     (m/distance h_img1 h_img2)))
 
+(defn blocked-histogram-grayscale [image]
+  (let [hist (.blocked_histogram_grayscale image block-size)]
+    (seq hist)))
+
 (defn blocked-histogram [image]
-  (let [hist (.blocked_histogram image 16)]
+  (let [hist (.blocked_histogram image block-size)]
     (seq hist)))
 
 (defn image-distance-blocked-histogram [img1 img2]

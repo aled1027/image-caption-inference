@@ -53,67 +53,105 @@ public class Image {
         _img_g.drawImage(clip_img, x, y, null);
     }
 
-  public int[] scaled_histogram(int inv_scale) {
-    // inv_scale is 1/scale of image to compute histogram from
-    // http://stackoverflow.com/questions/15558202/how-to-resize-image-in-java
+    public int[] scaled_histogram(int inv_scale) {
+        // inv_scale is 1/scale of image to compute histogram from
+        // http://stackoverflow.com/questions/15558202/how-to-resize-image-in-java
 
-    // Get grayscale version
-    BufferedImage gray_img = new BufferedImage(_width, _height, BufferedImage.TYPE_BYTE_GRAY);
-    Graphics g = gray_img.getGraphics();
-    g.drawImage(_img, 0, 0, null);
+        // Get grayscale version
+        BufferedImage gray_img = new BufferedImage(_width, _height, BufferedImage.TYPE_BYTE_GRAY);
+        Graphics g = gray_img.getGraphics();
+        g.drawImage(_img, 0, 0, null);
 
-    // Scale down the image
-    int new_width = _width / 2;
-    int new_height = _height / 2;
-    BufferedImage scaled_img = new BufferedImage(new_width, new_height, BufferedImage.TYPE_INT_RGB);
-    Graphics2D scaled_g = scaled_img.createGraphics();
-    AffineTransform t = AffineTransform.getScaleInstance(0.5, 0.5);
-    scaled_g.drawRenderedImage(gray_img, t);
+        // Scale down the image
+        int new_width = _width / 2;
+        int new_height = _height / 2;
+        BufferedImage scaled_img = new BufferedImage(new_width, new_height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D scaled_g = scaled_img.createGraphics();
+        AffineTransform t = AffineTransform.getScaleInstance(0.5, 0.5);
+        scaled_g.drawRenderedImage(gray_img, t);
 
-    int histogram[] = new int[256];
-    for (int i = 0; i < 256; i++) {
-      histogram[i] = 0;
+        int histogram[] = new int[256];
+        for (int i = 0; i < 256; i++) {
+            histogram[i] = 0;
+        }
+
+        for (int x = 0; x < new_width; x++) {
+            for (int y = 0; y < new_height; y++) {
+                int pixel = scaled_img.getRGB(x, y) & 0xFF;
+                histogram[pixel]++;
+            }
+        }
+        return histogram;
     }
 
-    for (int x = 0; x < new_width; x++) {
-      for (int y = 0; y < new_height; y++) {
-        int pixel = scaled_img.getRGB(x, y) & 0xFF;
-        histogram[pixel]++;
-      }
+
+    public int[] blocked_histogram_grayscale(int nblocks) {
+        // nblocks is number of blocks in each exis
+
+        // Get grayscale version
+        BufferedImage gray_img = new BufferedImage(_width, _height, BufferedImage.TYPE_BYTE_GRAY);
+        Graphics g = gray_img.getGraphics();
+        g.drawImage(_img, 0, 0, null);
+
+        int histogram[] = new int[256*nblocks*nblocks];
+        for (int i = 0; i < 256*nblocks*nblocks; i++) {
+            histogram[i] = 0;
+        }
+
+        for (int x = 0; x < _width; x++) {
+            for (int y = 0; y < _height; y++) {
+                int pixel = gray_img.getRGB(x, y) & 0xFF;
+                int blockx = x / (_width/nblocks);
+                int blocky = y / (_height/nblocks);
+                int blockidx = (nblocks*blockx) + blocky;
+                int idx = pixel + (blockidx*256);
+                //System.out.println("x: " + x + " y: " + y + " bx:" + blockx + " by: " + blocky + " bidx:" + blockidx + " idx:" + idx);
+                histogram[idx]++;
+            }
+        }
+        return histogram;
     }
-    return histogram;
-  }
 
+    public int[] blocked_histogram(int nblocks) {
+        // nblocks is number of blocks in each exis
 
-  public int[] blocked_histogram(int nblocks) {
-    // nblocks is number of blocks in each exis
+        // Get grayscale version
+        int red_hist_size = 256 * nblocks * nblocks;
+        int histogram[] = new int[3*256*nblocks*nblocks];
+        for (int i = 0; i < 3*256*nblocks*nblocks; i++) {
+            histogram[i] = 0;
+        }
 
-    // Get grayscale version
-    BufferedImage gray_img = new BufferedImage(_width, _height, BufferedImage.TYPE_BYTE_GRAY);
-    Graphics g = gray_img.getGraphics();
-    g.drawImage(_img, 0, 0, null);
+        for (int x = 0; x < _width; x++) {
+            for (int y = 0; y < _height; y++) {
 
-    int histogram[] = new int[256*nblocks*nblocks];
-    for (int i = 0; i < 256*nblocks*nblocks; i++) {
-      histogram[i] = 0;
+                // get offset of array
+                int blockx = x / (_width/nblocks);
+                int blocky = y / (_height/nblocks);
+                int blockidx = (nblocks*blockx) + blocky;
+
+                // get colors
+                Color mycolor = new Color(_img.getRGB(x, y));
+                int red = mycolor.getRed();
+                int green = mycolor.getGreen();
+                int blue = mycolor.getBlue();
+
+                // adjust colors by offsets
+                int red_idx = red + (blockidx*256);
+                int green_idx = red_hist_size + green + (blockidx*256);
+                int blue_idx = red_hist_size + red_hist_size + blue + (blockidx*256);
+
+                // update histogram
+                histogram[red_idx]++;
+                histogram[green_idx]++;
+                histogram[blue_idx]++;
+            }
+        }
+        return histogram;
     }
 
-    for (int x = 0; x < _width; x++) {
-      for (int y = 0; y < _height; y++) {
-        int pixel = gray_img.getRGB(x, y) & 0xFF;
-        int blockx = x / (_width/nblocks);
-        int blocky = y / (_height/nblocks);
-        int blockidx = (nblocks*blockx) + blocky;
-        int idx = pixel + (blockidx*256);
-        //System.out.println("x: " + x + " y: " + y + " bx:" + blockx + " by: " + blocky + " bidx:" + blockidx + " idx:" + idx);
-        histogram[idx]++;
-      }
-    }
-    return histogram;
-  }
 
-
-  public void save(String fileName) throws IOException {
+    public void save(String fileName) throws IOException {
         ImageIO.write(_img, "png", new File(fileName));
     }
 
