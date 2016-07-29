@@ -15,4 +15,4 @@
   [& args]
   (let [example-facts #{[:kicks :bear :soccer-ball] [:kicks :boy :soccer-ball]}
         samples (take 10 (doquery :importance generate-image-from-facts-query [example-facts]))]
-    (save-many-images (map #(render (:result %)) samples) "output/image")))
+    (save-many-images (map #(:result %) samples) "output/image")))

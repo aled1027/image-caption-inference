@@ -146,8 +146,10 @@
       ; modify the entities using the facts
       entities (apply-facts entities facts)
       ; generate image description for the entities
-      sprites (generate-sprites entities)]
-    sprites)))
+      sprites (generate-sprites entities)
+      ; render image from the sprites
+      image (render sprites)]
+    image)))
 
 ; query to generate an image from some facts
 (defquery generate-image-from-facts-query [facts]
