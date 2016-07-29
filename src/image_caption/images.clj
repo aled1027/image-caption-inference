@@ -47,8 +47,8 @@
   (into {}
         (map
           (fn [noun]
-            (let [x (sample (uniform-discrete border-left (- image-width border-right)))
-                  y (sample (uniform-discrete
+            (let [x (sample (uniform-continuous border-left (- image-width border-right)))
+                  y (sample (uniform-continuous
                               (+ border-top (/ image-height 2))
                               (- image-height border-bottom)))
                   flip (sample (uniform-discrete 0 1))
