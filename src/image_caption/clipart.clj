@@ -4,20 +4,21 @@
 
 (def renderer (Clipart. image-width image-height)) ; Renderer object
 
-(defn draw-clip [filename x-pos y-pos flip]
-  (.addClip renderer filename x-pos y-pos flip))
+(defn draw-clip [filename x-pos y-pos flip scale]
+  (.addClip renderer filename x-pos y-pos flip scale))
 
 (defn draw-clips [clips]
-  ;; clips = vector of dictionaries of :sprite :x :y :flip
-  ;; e.g. [{:sprite :boy :x 0 :y 0 :flip 0} {:sprite :girl :x 200 :y 100 :flip 1}]
+  ;; clips = vector of dictionaries of :sprite :x :y :flip :scale
+  ;; e.g. [{:sprite :boy :x 0 :y 0 :flip 0} {:sprite :girl :x 200 :y 100 :flip 1 :scale 0.7}]
   ;; draws the clips onto the clipart
   ;; flip means flip the clipart in around the y-axis
   (mapv (fn [clip]
           (let [filename ((:sprite clip) clip-map)
                 x-pos (:x clip)
                 y-pos (:y clip)
-                flip (:flip clip)]
-            (draw-clip filename x-pos y-pos flip)))
+                flip (:flip clip)
+                scale (:scale clip)]
+            (draw-clip filename x-pos y-pos flip scale)))
         clips))
 
 (defn render [clips]

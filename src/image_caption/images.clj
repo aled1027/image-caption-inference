@@ -5,15 +5,20 @@
 
 ; Generative model from scene description to image description
 
-(def border-x 50)
-(def border-y 200)
+(def border-top 20)
+(def border-bottom 150)
+(def border-left 50)
+(def border-right 50)
+(def image-background
+  {:sprite :background :x (/ image-width 2) :y (/ image-height 2) :flip 0 :scale 3})
 
 ; close position chosen by sampling pair of gaussians
-(def close-offset 50) ; offset of the gaussians from the other objects position
-(def close-variance 50) ; variance of each gaussin
+(def close-x-offset 80) ; offset of the gaussians from the other objects position
+(def close-x-variance 20) ; variance of each gaussian
+(def close-y-variance 10)
 
 ; image descriptions are of the form
-; [ ... { :sprite :boy :x 78 :y 144 :flip } ... ]
+; [ ... { :sprite :boy :x 78 :y 144 :flip 1 :scale 4 } ... ]
 
 ; generative model:
 ;   takes facts and generates image desription
@@ -43,10 +48,13 @@
   (into {}
     (map
       (fn [noun]
-        (let [x (sample (uniform-discrete 0 (- image-width border-x)))
-              y (sample (uniform-discrete 0 (- image-height border-y)))
-              flip (sample (uniform-discrete 0 1))]
-          [noun {:sprite noun :x x :y y :flip flip}]))
+        (let [x (sample (uniform-discrete border-left (- image-width border-right)))
+              y (sample (uniform-discrete
+                          (+ border-top (/ image-height 2))
+                          (- image-height border-bottom)))
+              flip (sample (uniform-discrete 0 1))
+              scale (sample (uniform-continuous 0.7 1))]
+          [noun {:sprite noun :x x :y y :flip flip :scale scale}]))
       nouns)))
 
 (defm update-entity [entities entity key value]
@@ -56,10 +64,13 @@
 
 (declare apply-facts)
 
-(defm sample-close-to [coord]
+(defm sample-close-x-to [coord]
   (if (sample (flip 0.5))
-    (sample (normal (- coord close-offset) close-variance))
-    (sample (normal (+ coord close-offset) close-variance))))
+    (sample (normal (- coord close-x-offset) close-x-variance))
+    (sample (normal (+ coord close-x-offset) close-x-variance))))
+
+(defm sample-close-y-to [coord]
+  (sample (normal coord close-y-variance)))
 
 (defm apply-fact [entities fact]
   (let [relation (nth fact 0)
@@ -72,8 +83,8 @@
         ; right is close to left
         (let [left-x (:x left-entity)
               left-y (:y left-entity)
-              x (sample-close-to left-x)
-              y (sample-close-to left-y)]
+              x (sample-close-x-to left-x)
+              y (sample-close-y-to left-y)]
             (update-entity (update-entity entities right :y y) right :x x))
       (= relation :faces)
         ; left faces right
@@ -102,12 +113,13 @@
     {:sprite (get entity :sprite)
      :x (get entity :x)
      :y (get entity :y)
-     :flip (get entity :flip)}))
+     :flip (get entity :flip)
+     :scale (get entity :scale)}))
 
 (defm generate-sprites [entities]
   (conj
     (map generate-sprite (seq entities))
-    {:sprite :background :x 0 :y 0 :flip 0}))
+    image-background))
 
 ; distribution of score values given an image
 (defdist score-distribution

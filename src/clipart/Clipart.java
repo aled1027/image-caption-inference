@@ -84,16 +84,26 @@ public class Clipart {
 
     // --- ALEX L RELEVANT METHODS--- //
 
-  public void addClip(String filename, int x, int y, int flip) throws IOException {
+  public void addClip(String filename, int x, int y, int flip, float scale) throws IOException {
         BufferedImage clip_img = ImageIO.read(new File(filename));
+
         if (flip == 1)
         {
-          // Flip the image horizontally
+          // Flip the image
           AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
           tx.translate(-clip_img.getWidth(null), 0);
           AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
           clip_img = op.filter(clip_img, null);
         }
+
+        // Scale the image
+        AffineTransform ts = AffineTransform.getScaleInstance(scale, scale);
+        AffineTransformOp op = new AffineTransformOp(ts, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+        clip_img = op.filter(clip_img, null);
+
+        x -= clip_img.getWidth(null) / 2.0;
+        y -= clip_img.getHeight(null) / 2.0;
+
         _img_g.drawImage(clip_img, x, y, null);
     }
 
