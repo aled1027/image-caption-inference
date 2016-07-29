@@ -131,11 +131,13 @@
     image-background))
 
 ; distribution of score values given an image
-(defdist image-distribution [img1] []
+(defdist image-distribution
+  [img1]
+  [img1pixels (get-greyscale-pixels img1)]
   (sample* [this] (assert false "can't sample from this - dummy!"))
   (observe* [this img2]
             ; Alex L changning ths
-            (image-distance img1 img2)))
+            (image-distance img1pixels (get-greyscale-pixels img2))))
 
 ; generate an image from some facts
 (with-primitive-procedures [nouns-from-facts render]
@@ -156,9 +158,10 @@
   (generate-image-from-facts facts))
 
 ; generative model to find the facts for an image
+(with-primitive-procedures [image-distribution]
 (defquery generate-image [image]
   (let [
     facts (simple-fact-prior)
     generated-image (generate-image-from-facts facts)]
-  ;(observe (image-distribution generated-image) image)
-  {:facts facts :image generated-image}))
+  (observe (image-distribution generated-image) image)
+  {:facts facts :image generated-image})))
