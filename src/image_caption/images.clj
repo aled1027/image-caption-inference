@@ -71,50 +71,50 @@
 (defm sample-close-y-to [coord]
   (sample (normal coord close-y-variance)))
 
-(defm apply-fact [entities fact]
-  (let [relation (nth fact 0)
+(defm apply-fact [relation entities fact]
+  (let [current-relation (nth fact 0)
         left (nth fact 1)
         right (nth fact 2)
         left-entity (get entities left)
         right-entity (get entities right)]
     (cond
-      (= left right)
+      ; ignore if not the relation we're processing
+      (not= relation current-relation)
+        entities
       ; ignore relations for the same entity
-      entities
-      (= relation :close)
+      (= left right)
+        entities
       ; right is close to left
+      (= relation :close)
       (let [left-x (:x left-entity)
             left-y (:y left-entity)
             x (sample-close-x-to left-x)
             y (sample-close-y-to left-y)]
         (update-entity (update-entity entities right :y y) right :x x))
-      (= relation :faces)
       ; left faces right
+      (= relation :faces)
       (let [left-x (:x left-entity)
             right-x (:x right-entity)]
         (if (< left-x right-x)
           (update-entity entities left :flip 0)
           (update-entity entities left :flip 1)))
-      ;(= relation :kicks)
-      ;; left sticks leg out, and left close to right, and left faces right
-      ;(apply-facts
-      ;  (cond
-      ;    (= left :boy)
-      ;    (update-entity entities left :sprite :boy-kicking)
-      ;    (= left :girl)
-      ;    (update-entity entities left :sprite :girl-kicking)
-      ;    (= left :soccer-ball)
-      ;    (update-entity entities left :sprite :soccer-ball-kicking)
-      ;    :else
-      ;    (update-entity entities left :sprite :bear-kicking))
-      ;  ; FIXME: ordering here matters! Also between results
-      ;  #{[:close left right] [:faces left right]})
+      ; left sticks leg out
+      (= relation :kicks)
+        (cond
+          (= left :boy)
+          (update-entity entities left :sprite :boy-kicking)
+          (= left :girl)
+          (update-entity entities left :sprite :girl-kicking)
+          (= left :soccer-ball)
+          (update-entity entities left :sprite :soccer-ball-kicking)
+          :else
+          (update-entity entities left :sprite :bear-kicking))
       :else
       entities)))
 
-(defm apply-facts [entities facts]
+(defm apply-facts [relation entities facts]
   (if (seq facts)
-    (apply-fact (apply-facts entities (rest facts)) (first facts))
+    (apply-fact relation (apply-facts relation entities (rest facts)) (first facts))
     entities))
 
 (defm generate-sprite [value]
@@ -138,14 +138,35 @@
   (observe* [this img2]
             (image-similarity img1 img2)))
 
+; expand a fact, such as :kicks a b into :faces a b and :close a b
+(defn expand-fact [fact]
+  (let [relation (nth fact 0)
+        left (nth fact 1)
+        right (nth fact 2)]
+    (cond
+      (= relation :kicks)
+        #{[:kicks left right] [:close left right] [:faces left right]}
+    :else #{fact})))
+
+; expand all facts
+(defn expand-facts [facts]
+  (loop [facts facts
+         new-facts #{}]
+    (if (seq facts)
+      (recur (rest facts) (into new-facts (expand-fact (first facts))))
+      new-facts)))
+
 ; generate an image from some facts
-(with-primitive-procedures [nouns-from-facts render]
+(with-primitive-procedures [nouns-from-facts render expand-facts]
   (defm generate-image-from-facts [facts]
-    (let [
+    (let [; expand the facts
+          facts (expand-facts facts)
           ; the entities (the nouns mentioned in the facts)
           entities (initial-entities (nouns-from-facts facts))
           ; modify the entities using the facts
-          entities (apply-facts entities facts)
+          entities (apply-facts :close entities facts)
+          entities (apply-facts :faces entities facts)
+          entities (apply-facts :kicks entities facts)
           ; generate image description for the entities
           sprites (generate-sprites entities)
           ; render image from the sprites
