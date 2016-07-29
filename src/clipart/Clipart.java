@@ -61,7 +61,7 @@ public class Clipart {
 
     // new stuff
     public Clipart(int width, int height) {
-        _img = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+        _img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         _img_g = _img.createGraphics();
         _img_g.setFont(_font);
         _fontRenderContext = _img_g.getFontRenderContext();
