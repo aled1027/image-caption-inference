@@ -37,11 +37,5 @@
     (.load image filename)
     image))
 
-(defn histogram [image]
-  (let [scale 0.5
-        java-hist (.histogram image (* scale image-width) (* scale image-height) scale scale)
-        hist (seq java-hist)]
-    hist))
-
 (defn get-greyscale-pixels [image]
   (mapv #(into [] %) (seq (.getGrayscalePixels image))))

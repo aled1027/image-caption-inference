@@ -21,3 +21,7 @@
 ;  (let [example-facts #{[:kicks :bear :soccer-ball] [:kicks :boy :soccer-ball]}
 ;        samples (take 10 (doquery generate-image-from-facts-query [example-facts]))]
 ;    (save-many-images (map #(:result %) samples) "output/image")))
+
+;(defn -main
+;  [& args]
+;  (println (histogram (read-image "input.png"))))

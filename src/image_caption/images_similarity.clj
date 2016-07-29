@@ -29,6 +29,10 @@
         dist (m/distance r_img1 r_img2)]
     dist))
 
+(defn histogram [image]
+  (let [hist (.histogram image 2)]
+    (seq hist)))
+
 (defn test-image-distance []
   (let [img1 (read-image "resources/examples/example1.png")]
         (println (histogram img1))))
