@@ -7,11 +7,11 @@
   (:import [robots.Clipart Clipart]))
 
 (defn -main
-  "I don't do a whole lot ... yet."
   [& args]
   (let [example-facts #{[:kicks :boy :girl]}
-        image-samples (take 10 (doquery :importance generate-image [example-facts]))]
-    (render-to-files (map #(:result %) image-samples) "image-sample")))
+        image-samples (take 50 (doquery :importance generate-image [example-facts]))
+        many-clips (map #(:result %) image-samples)]
+    (render-many-to-files many-clips "output/image")))
 
 ;(defn dist-test []
 ;  (let [img1 (render (nth all-clips 0))

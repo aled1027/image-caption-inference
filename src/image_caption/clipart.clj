@@ -20,12 +20,6 @@
             (draw-clip filename x-pos y-pos flip)))
         clips))
 
-(defn render-to-file [clips filename]
-  ;; renders and saves image to filename
-  (.background renderer)
-  (draw-clips clips)
-  (.save renderer filename))
-
 (defn render [clips]
   ;; render image, return 2D array of image
   (.background renderer)
@@ -36,3 +30,16 @@
   ;; render many images, returns a vector of
   ;; 2D array of images
   (mapv (fn [clips] (render clips)) many-clips))
+
+(defn render-to-file [clips filename]
+  ;; renders and saves image to filename
+  (println "Writing to " filename)
+  (.background renderer)
+  (draw-clips clips)
+  (.save renderer filename))
+
+(defn render-many-to-files [many-clips path]
+  (mapv
+    (fn [clips i] (render-to-file clips (str path i ".png")))
+    many-clips
+    (range 0 (count many-clips))))

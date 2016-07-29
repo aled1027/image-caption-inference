@@ -5,7 +5,8 @@
 
 ; Generative model from scene description to image description
 
-(def border-width 100)
+(def border-x 50)
+(def border-y 200)
 
 ; close position chosen by sampling pair of gaussians
 (def close-offset 50) ; offset of the gaussians from the other objects position
@@ -43,8 +44,8 @@
   (into {}
     (map
       (fn [noun]
-        (let [x (sample (uniform-discrete border-width (- image-width border-width)))
-              y (sample (uniform-discrete border-width (- image-height border-width)))
+        (let [x (sample (uniform-discrete 0 (- image-width border-x)))
+              y (sample (uniform-discrete 0 (- image-height border-y)))
               flip (sample (uniform-discrete 0 1))]
           [noun {:sprite noun :x x :y y :flip flip}]))
       nouns)))
