@@ -6,7 +6,10 @@
 ; Generative model from scene description to image description
 
 (def border-width 100)
-(def close-distance 40)
+
+; close position chosen by sampling pair of gaussians
+(def close-offset 50) ; offset of the gaussians from the other objects position
+(def close-variance 50) ; variance of each gaussin
 
 ; image descriptions are of the form
 ; [ ... { :sprite :boy :x 78 :y 144 :flip } ... ]
@@ -54,6 +57,11 @@
 
 (declare apply-facts)
 
+(defm sample-close-to [coord]
+  (if (sample (flip 0.5))
+    (sample (normal (- coord close-offset) close-variance))
+    (sample (normal (+ coord close-offset) close-variance))))
+
 (defm apply-fact [entities fact]
   (let [relation (nth fact 0)
         left (nth fact 1)
@@ -65,8 +73,8 @@
         ; right is close to left
         (let [left-x (:x left-entity)
               left-y (:y left-entity)
-              x (sample (uniform-continuous (- left-x close-distance) (+ left-x close-distance)))
-              y (sample (uniform-continuous (- left-y close-distance) (+ left-y close-distance)))]
+              x (sample-close-to left-x)
+              y (sample-close-to left-y)]
             (update-entity (update-entity entities right :y y) right :x x))
       (= relation :faces)
         ; left faces right
