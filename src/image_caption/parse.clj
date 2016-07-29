@@ -4,15 +4,6 @@
   (:use [image_caption globals facts sentences]))
 
 
-(defquery sample-facts []
-  (simple-fact-prior))
-
-(defquery sample-sentence' []
-  (generate-sentence (simple-fact-prior)))
-
-(defquery query-sentence [facts]
-  (generate-sentence facts))
-
 (defquery query-short-sentence [facts]
   (let [r (generate-sentence facts)]
     (observe (exponential 30) (count r))
@@ -67,18 +58,6 @@
 
 ;; (first (drop 1500 (doquery :importance sample-facts [])))
 
-(def example-facts
-  [[:kicks :girl :boy]
-   [:faces :bear :girl]
-   [:kicks :boy :soccer-ball]
-   [:close :bear :soccer-ball]])
-
-
-;; (first (doquery :importance query-sentence [example-facts]))
-;; (first (drop 1500 (doquery :lmh query-short-sentence [example-facts])))
-
-;;(first (doquery :importance query-sentence [[[:kicks :boy :boy]]]))
-
 
 ;; (first (drop 50000 (doquery :rmh sentence-to-facts ["The bear kicks the boy, who is close to the girl."])))
 
@@ -89,11 +68,7 @@
 
 
 (defn parse-sentence [sentence]
-  (:result (first (drop 400000 (doquery :rmh sentence-to-facts [sentence])))))
-
-
-;; (defn parse-sentence [sentence]
-;;   (:result (first (drop 50000 (doquery :rmh sentence-to-facts [sentence])))))
+  (first (:result (first (drop 400000 (doquery :rmh sentence-to-facts [sentence]))))))
 
 
 (defn parse-sentence' [sentence]

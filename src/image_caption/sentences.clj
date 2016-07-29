@@ -113,7 +113,7 @@
                           (if (= (get cur 0) (get cur 2))
                             [(reflexive-pronoun (get cur 0))]
                             nil)
-                          (if (and prev (= (get cur 2) (get prev 2)) (sample (flip 0.1)))
+                          (if (and prev (not= (get cur 0) (get cur 2)) (= (get cur 2) (get prev 2)) (sample (flip 0.1)))
                             [(accusative-pronoun (get cur 2))]
                             nil) ;; flip(0.1) because this often creates awkward sentences
                           )]
